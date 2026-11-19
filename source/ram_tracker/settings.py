@@ -1,5 +1,5 @@
 """
-Django settings for the RAM Price Tracker (IT7405 individual project).
+Django settings for RAM Price Tracker
 
 Stack: Django 5.2 LTS + django-mongodb-backend 5.2 (official MongoDB backend,
 built on PyMongo) + MongoDB 6.0 / 7.0 / 8.0.
