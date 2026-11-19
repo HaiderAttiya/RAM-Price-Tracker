@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load tracker_extras %}
+{% block title %}Compare RAM | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Compare RAM</h1>
+    <p>{{ products|length }} kits side by side. A "Best" tag marks the winner of each row; ties share it.</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'tracker:product_list' %}">Choose different products</a>
+</div>
+
+<div class="panel p-0">
+  <div class="table-responsive">
+    <table class="table data-table compare-table mb-0">
+      <caption class="visually-hidden">Specification and price comparison</caption>
+      <thead>
+        <tr>
+          <td></td>
+          {% for p in products %}
+          <th scope="col" class="py-3">
+            <div class="small-muted">{{ p.brand }}</div>
+            <a class="h5 d-block mb-1" href="{{ p.get_absolute_url }}">{{ p.model }}</a>
+            {% if p.remove_url %}<a class="small" href="{{ p.remove_url }}">Remove from comparison</a>{% endif %}
+          </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Best price</th>
+          {% for p in products %}<td class="{% if p.pk in best.price %}best-cell{% endif %}"><span class="price price-lg">{{ p.price|money }}</span>{% if p.pk in best.price %}<span class="best-tag">Best</span>{% endif %}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Best price at</th>
+          {% for p in products %}<td>{{ p.best_retailer }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Price per GB</th>
+          {% for p in products %}<td class="num {% if p.pk in best.price_per_gb %}best-cell{% endif %}">{{ p.price_per_gb|money }}{% if p.pk in best.price_per_gb %}<span class="best-tag">Best</span>{% endif %}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Deal status</th>
+          {% for p in products %}<td>{% include "tracker/_deal_badge.html" with deal=p.deal %}{% if not p.deal.is_deal %}<span class="small-muted">{% if p.deal.level == "unknown" %}Not enough history{% else %}No deal right now{% endif %}</span>{% endif %}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">DDR generation</th>
+          {% for p in products %}<td>{{ p.ddr_generation }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Capacity</th>
+          {% for p in products %}<td class="{% if p.pk in best.capacity %}best-cell{% endif %}">{{ p.capacity_display }}{% if p.pk in best.capacity %}<span class="best-tag">Most</span>{% endif %}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Speed</th>
+          {% for p in products %}<td class="num {% if p.pk in best.speed %}best-cell{% endif %}">{{ p.speed_mhz }} MHz{% if p.pk in best.speed %}<span class="best-tag">Best</span>{% endif %}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">CAS latency</th>
+          {% for p in products %}<td class="num">CL{{ p.cas_latency }}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">True latency</th>
+          {% for p in products %}<td class="num {% if p.pk in best.latency %}best-cell{% endif %}">{{ p.latency_ns }} ns{% if p.pk in best.latency %}<span class="best-tag">Best</span>{% endif %}</td>{% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Voltage</th>
+          {% for p in products %}<td class="num">{{ p.voltage }} V</td>{% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="small-muted mt-3">True latency = CL × 2000 ÷ speed in MHz (lower is better). Price per GB = best price ÷ total capacity.</p>
+{% endblock %}

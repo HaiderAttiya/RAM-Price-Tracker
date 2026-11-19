@@ -1,0 +1,693 @@
+products: 49 documents, price_records: 4119 documents
+
+==============================================================================
+QUERY 1 - filter products by DDR generation, capacity and price range, cheapest first
+==============================================================================
+Query: db.products.find({ ddr_generation: 'DDR5', capacity_gb: 32, price: { $gte: 150, $lte: 220 } }).sort({ price: 1 })
+  WITH the compound index prod_ddr_cap_price_idx
+    winning plan        : FETCH > IXSCAN
+    index used          : prod_ddr_cap_price_idx
+    nReturned           : 12
+    totalKeysExamined   : 12
+    totalDocsExamined   : 12
+    executionTimeMillis : 0
+    in-memory SORT stage: no
+  WITHOUT an index (forced collection scan)
+    winning plan        : SORT > COLLSCAN
+    index used          : (none)
+    nReturned           : 12
+    totalKeysExamined   : 0
+    totalDocsExamined   : 49
+    executionTimeMillis : 0
+    in-memory SORT stage: yes
+
+--- full explain('executionStats') output, WITH index ---
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'ram_price_tracker.products',
+    parsedQuery: {
+      '$and': [
+        {
+          capacity_gb: {
+            '$eq': 32
+          }
+        },
+        {
+          ddr_generation: {
+            '$eq': 'DDR5'
+          }
+        },
+        {
+          price: {
+            '$lte': Decimal128('220')
+          }
+        },
+        {
+          price: {
+            '$gte': Decimal128('150')
+          }
+        }
+      ]
+    },
+    indexFilterSet: false,
+    queryHash: '0D755BFB',
+    planCacheShapeHash: '0D755BFB',
+    planCacheKey: 'DD372636',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: {
+          ddr_generation: 1,
+          capacity_gb: 1,
+          price: 1
+        },
+        indexName: 'prod_ddr_cap_price_idx',
+        isMultiKey: false,
+        multiKeyPaths: {
+          ddr_generation: [],
+          capacity_gb: [],
+          price: []
+        },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          ddr_generation: [
+            '["DDR5", "DDR5"]'
+          ],
+          capacity_gb: [
+            '[32, 32]'
+          ],
+          price: [
+            '[150, 220]'
+          ]
+        }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 12,
+    executionTimeMillis: 0,
+    totalKeysExamined: 12,
+    totalDocsExamined: 12,
+    executionStages: {
+      isCached: false,
+      stage: 'FETCH',
+      nReturned: 12,
+      executionTimeMillisEstimate: 0,
+      works: 13,
+      advanced: 12,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      docsExamined: 12,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 12,
+        executionTimeMillisEstimate: 0,
+        works: 13,
+        advanced: 12,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        keyPattern: {
+          ddr_generation: 1,
+          capacity_gb: 1,
+          price: 1
+        },
+        indexName: 'prod_ddr_cap_price_idx',
+        isMultiKey: false,
+        multiKeyPaths: {
+          ddr_generation: [],
+          capacity_gb: [],
+          price: []
+        },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          ddr_generation: [
+            '["DDR5", "DDR5"]'
+          ],
+          capacity_gb: [
+            '[32, 32]'
+          ],
+          price: [
+            '[150, 220]'
+          ]
+        },
+        keysExamined: 12,
+        seeks: 1,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  queryShapeHash: '31087452E8AEF27DB6DF84597BB027E5BBB6072184AD713628BCC735468CD1A0',
+  command: {
+    find: 'products',
+    filter: {
+      ddr_generation: 'DDR5',
+      capacity_gb: 32,
+      price: {
+        '$gte': Decimal128('150'),
+        '$lte': Decimal128('220')
+      }
+    },
+    sort: {
+      price: 1
+    },
+    '$db': 'ram_price_tracker'
+  },
+  serverInfo: {
+    host: 'vm',
+    port: 27017,
+    version: '8.0.23',
+    gitVersion: 'nogitversion'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+
+--- full explain('executionStats') output, forced COLLSCAN ---
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'ram_price_tracker.products',
+    parsedQuery: {
+      '$and': [
+        {
+          capacity_gb: {
+            '$eq': 32
+          }
+        },
+        {
+          ddr_generation: {
+            '$eq': 'DDR5'
+          }
+        },
+        {
+          price: {
+            '$lte': Decimal128('220')
+          }
+        },
+        {
+          price: {
+            '$gte': Decimal128('150')
+          }
+        }
+      ]
+    },
+    indexFilterSet: false,
+    queryHash: '0D755BFB',
+    planCacheShapeHash: '0D755BFB',
+    planCacheKey: 'DD372636',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'SORT',
+      sortPattern: {
+        price: 1
+      },
+      memLimit: 104857600,
+      type: 'simple',
+      inputStage: {
+        stage: 'COLLSCAN',
+        filter: {
+          '$and': [
+            {
+              capacity_gb: {
+                '$eq': 32
+              }
+            },
+            {
+              ddr_generation: {
+                '$eq': 'DDR5'
+              }
+            },
+            {
+              price: {
+                '$lte': Decimal128('220')
+              }
+            },
+            {
+              price: {
+                '$gte': Decimal128('150')
+              }
+            }
+          ]
+        },
+        direction: 'forward'
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 12,
+    executionTimeMillis: 0,
+    totalKeysExamined: 0,
+    totalDocsExamined: 49,
+    executionStages: {
+      isCached: false,
+      stage: 'SORT',
+      nReturned: 12,
+      executionTimeMillisEstimate: 0,
+      works: 63,
+      advanced: 12,
+      needTime: 50,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      sortPattern: {
+        price: 1
+      },
+      memLimit: 104857600,
+      type: 'simple',
+      totalDataSizeSorted: 4368,
+      usedDisk: false,
+      spills: 0,
+      spilledDataStorageSize: 0,
+      inputStage: {
+        stage: 'COLLSCAN',
+        filter: {
+          '$and': [
+            {
+              capacity_gb: {
+                '$eq': 32
+              }
+            },
+            {
+              ddr_generation: {
+                '$eq': 'DDR5'
+              }
+            },
+            {
+              price: {
+                '$lte': Decimal128('220')
+              }
+            },
+            {
+              price: {
+                '$gte': Decimal128('150')
+              }
+            }
+          ]
+        },
+        nReturned: 12,
+        executionTimeMillisEstimate: 0,
+        works: 50,
+        advanced: 12,
+        needTime: 37,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        direction: 'forward',
+        docsExamined: 49
+      }
+    }
+  },
+  queryShapeHash: '31087452E8AEF27DB6DF84597BB027E5BBB6072184AD713628BCC735468CD1A0',
+  command: {
+    find: 'products',
+    filter: {
+      ddr_generation: 'DDR5',
+      capacity_gb: 32,
+      price: {
+        '$gte': Decimal128('150'),
+        '$lte': Decimal128('220')
+      }
+    },
+    sort: {
+      price: 1
+    },
+    hint: {
+      '$natural': 1
+    },
+    '$db': 'ram_price_tracker'
+  },
+  serverInfo: {
+    host: 'vm',
+    port: 27017,
+    version: '8.0.23',
+    gitVersion: 'nogitversion'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+
+==============================================================================
+QUERY 2 - price history of one product, newest first (product page / chart)
+==============================================================================
+Product: G.Skill Trident Z5 RGB  _id=6aff475bd997b28a8faa0ec0
+Query: db.price_records.find({ product_id: <_id> }).sort({ recorded_at: -1 }).limit(12)
+  WITH the compound index price_product_time_idx
+    winning plan        : LIMIT > FETCH > IXSCAN
+    index used          : price_product_time_idx
+    nReturned           : 12
+    totalKeysExamined   : 12
+    totalDocsExamined   : 12
+    executionTimeMillis : 0
+    in-memory SORT stage: no
+  WITHOUT an index (forced collection scan)
+    winning plan        : SORT > COLLSCAN
+    index used          : (none)
+    nReturned           : 12
+    totalKeysExamined   : 0
+    totalDocsExamined   : 4119
+    executionTimeMillis : 1
+    in-memory SORT stage: yes
+
+--- full explain('executionStats') output, WITH index ---
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'ram_price_tracker.price_records',
+    parsedQuery: {
+      product_id: {
+        '$eq': ObjectId('6aff475bd997b28a8faa0ec0')
+      }
+    },
+    indexFilterSet: false,
+    queryHash: '2944C3C8',
+    planCacheShapeHash: '2944C3C8',
+    planCacheKey: '8203AE1F',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'LIMIT',
+      limitAmount: 12,
+      inputStage: {
+        stage: 'FETCH',
+        inputStage: {
+          stage: 'IXSCAN',
+          keyPattern: {
+            product_id: 1,
+            recorded_at: -1
+          },
+          indexName: 'price_product_time_idx',
+          isMultiKey: false,
+          multiKeyPaths: {
+            product_id: [],
+            recorded_at: []
+          },
+          isUnique: false,
+          isSparse: false,
+          isPartial: false,
+          indexVersion: 2,
+          direction: 'forward',
+          indexBounds: {
+            product_id: [
+              "[ObjectId('6aff475bd997b28a8faa0ec0'), ObjectId('6aff475bd997b28a8faa0ec0')]"
+            ],
+            recorded_at: [
+              '[MaxKey, MinKey]'
+            ]
+          }
+        }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 12,
+    executionTimeMillis: 0,
+    totalKeysExamined: 12,
+    totalDocsExamined: 12,
+    executionStages: {
+      isCached: false,
+      stage: 'LIMIT',
+      nReturned: 12,
+      executionTimeMillisEstimate: 0,
+      works: 13,
+      advanced: 12,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      limitAmount: 12,
+      inputStage: {
+        stage: 'FETCH',
+        nReturned: 12,
+        executionTimeMillisEstimate: 0,
+        works: 12,
+        advanced: 12,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 0,
+        docsExamined: 12,
+        alreadyHasObj: 0,
+        inputStage: {
+          stage: 'IXSCAN',
+          nReturned: 12,
+          executionTimeMillisEstimate: 0,
+          works: 12,
+          advanced: 12,
+          needTime: 0,
+          needYield: 0,
+          saveState: 0,
+          restoreState: 0,
+          isEOF: 0,
+          keyPattern: {
+            product_id: 1,
+            recorded_at: -1
+          },
+          indexName: 'price_product_time_idx',
+          isMultiKey: false,
+          multiKeyPaths: {
+            product_id: [],
+            recorded_at: []
+          },
+          isUnique: false,
+          isSparse: false,
+          isPartial: false,
+          indexVersion: 2,
+          direction: 'forward',
+          indexBounds: {
+            product_id: [
+              "[ObjectId('6aff475bd997b28a8faa0ec0'), ObjectId('6aff475bd997b28a8faa0ec0')]"
+            ],
+            recorded_at: [
+              '[MaxKey, MinKey]'
+            ]
+          },
+          keysExamined: 12,
+          seeks: 1,
+          dupsTested: 0,
+          dupsDropped: 0
+        }
+      }
+    }
+  },
+  queryShapeHash: 'DBD5D85DDA4F09DB765B2670CCCA45B4C3C51E7A345F61A5A073D4C3D7EFE245',
+  command: {
+    find: 'price_records',
+    filter: {
+      product_id: ObjectId('6aff475bd997b28a8faa0ec0')
+    },
+    sort: {
+      recorded_at: -1
+    },
+    limit: 12,
+    '$db': 'ram_price_tracker'
+  },
+  serverInfo: {
+    host: 'vm',
+    port: 27017,
+    version: '8.0.23',
+    gitVersion: 'nogitversion'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+
+--- full explain('executionStats') output, forced COLLSCAN ---
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'ram_price_tracker.price_records',
+    parsedQuery: {
+      product_id: {
+        '$eq': ObjectId('6aff475bd997b28a8faa0ec0')
+      }
+    },
+    indexFilterSet: false,
+    queryHash: '2944C3C8',
+    planCacheShapeHash: '2944C3C8',
+    planCacheKey: '8203AE1F',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'SORT',
+      sortPattern: {
+        recorded_at: -1
+      },
+      memLimit: 104857600,
+      limitAmount: 12,
+      type: 'simple',
+      inputStage: {
+        stage: 'COLLSCAN',
+        filter: {
+          product_id: {
+            '$eq': ObjectId('6aff475bd997b28a8faa0ec0')
+          }
+        },
+        direction: 'forward'
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 12,
+    executionTimeMillis: 1,
+    totalKeysExamined: 0,
+    totalDocsExamined: 4119,
+    executionStages: {
+      isCached: false,
+      stage: 'SORT',
+      nReturned: 12,
+      executionTimeMillisEstimate: 1,
+      works: 4133,
+      advanced: 12,
+      needTime: 4120,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      sortPattern: {
+        recorded_at: -1
+      },
+      memLimit: 104857600,
+      limitAmount: 12,
+      type: 'simple',
+      totalDataSizeSorted: 1977,
+      usedDisk: false,
+      spills: 0,
+      spilledDataStorageSize: 0,
+      inputStage: {
+        stage: 'COLLSCAN',
+        filter: {
+          product_id: {
+            '$eq': ObjectId('6aff475bd997b28a8faa0ec0')
+          }
+        },
+        nReturned: 87,
+        executionTimeMillisEstimate: 1,
+        works: 4120,
+        advanced: 87,
+        needTime: 4032,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        direction: 'forward',
+        docsExamined: 4119
+      }
+    }
+  },
+  queryShapeHash: 'DBD5D85DDA4F09DB765B2670CCCA45B4C3C51E7A345F61A5A073D4C3D7EFE245',
+  command: {
+    find: 'price_records',
+    filter: {
+      product_id: ObjectId('6aff475bd997b28a8faa0ec0')
+    },
+    sort: {
+      recorded_at: -1
+    },
+    hint: {
+      '$natural': 1
+    },
+    limit: 12,
+    '$db': 'ram_price_tracker'
+  },
+  serverInfo: {
+    host: 'vm',
+    port: 27017,
+    version: '8.0.23',
+    gitVersion: 'nogitversion'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}

@@ -1,0 +1,181 @@
+/*
+  RAM Price Tracker - site styles, layered on top of Bootstrap 5.3.
+
+  Identity: a RAM module is a green PCB with gold edge-connector fingers.
+  PCB green is the brand colour; gold is reserved for "deal" states so it
+  keeps its meaning.  Spec data is set like silkscreen printing: small,
+  ruled cells.  Everything else stays quiet.
+*/
+
+@font-face { font-family: "Barlow"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/barlow-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 500; font-style: normal; font-display: swap; src: url("../fonts/barlow-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/barlow-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/barlow-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Semi Condensed"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/barlow-semi-condensed-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Semi Condensed"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/barlow-semi-condensed-latin-700-normal.woff2") format("woff2"); }
+
+:root {
+  --ink: #15201b;
+  --ink-soft: #4b5a52;
+  --pcb: #0f4a38;
+  --pcb-deep: #0a3528;
+  --pcb-tint: #e3eee8;
+  --gold: #c9a23f;
+  --gold-ink: #6b4f00;
+  --gold-tint: #f7edcf;
+  --paper: #f3f5f1;
+  --line: #d6ddd5;
+  --line-strong: #b4c0b6;
+
+  /* Bootstrap variable overrides */
+  --bs-body-font-family: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bs-body-font-size: 1rem;
+  --bs-body-color: var(--ink);
+  --bs-body-bg: var(--paper);
+  --bs-link-color: #0b5c45;
+  --bs-link-color-rgb: 11, 92, 69;
+  --bs-link-hover-color: #0a3528;
+  --bs-link-hover-color-rgb: 10, 53, 40;
+  --bs-border-color: var(--line);
+  --bs-border-radius: 4px;
+  --bs-primary: var(--pcb);
+  --bs-primary-rgb: 15, 74, 56;
+  --bs-focus-ring-color: rgba(201, 162, 63, 0.55);
+}
+
+body { font-feature-settings: "tnum" 0; }
+h1, h2, h3, .display-font { font-family: "Barlow Semi Condensed", "Barlow", sans-serif; font-weight: 700; letter-spacing: 0.005em; }
+h1 { font-size: clamp(1.9rem, 1.4rem + 2vw, 2.7rem); line-height: 1.1; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Visible keyboard focus everywhere */
+a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible, svg:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---- Buttons ---------------------------------------------------------- */
+.btn { font-weight: 600; }
+.btn-primary {
+  --bs-btn-bg: var(--pcb); --bs-btn-border-color: var(--pcb);
+  --bs-btn-hover-bg: var(--pcb-deep); --bs-btn-hover-border-color: var(--pcb-deep);
+  --bs-btn-active-bg: var(--pcb-deep); --bs-btn-active-border-color: var(--pcb-deep);
+  --bs-btn-disabled-bg: var(--pcb); --bs-btn-disabled-border-color: var(--pcb);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--pcb); --bs-btn-border-color: var(--pcb);
+  --bs-btn-hover-bg: var(--pcb); --bs-btn-hover-border-color: var(--pcb);
+  --bs-btn-active-bg: var(--pcb-deep); --bs-btn-active-border-color: var(--pcb-deep);
+}
+.btn-gold { --bs-btn-bg: var(--gold); --bs-btn-border-color: var(--gold); --bs-btn-color: var(--ink);
+  --bs-btn-hover-bg: #b88f2c; --bs-btn-hover-border-color: #b88f2c; --bs-btn-hover-color: var(--ink); }
+
+/* ---- Header: PCB bar with gold contact fingers -------------------------- */
+.site-header { background: var(--pcb); position: relative; padding-bottom: 8px; }
+.site-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
+  background:
+    repeating-linear-gradient(90deg, var(--gold) 0 6px, transparent 6px 9px);
+}
+.site-header .navbar { --bs-navbar-color: rgba(255,255,255,.82); --bs-navbar-hover-color: #fff; --bs-navbar-active-color: #fff;
+  --bs-navbar-brand-color: #fff; --bs-navbar-brand-hover-color: #fff; --bs-navbar-toggler-border-color: rgba(255,255,255,.4); }
+.site-header .navbar-toggler-icon { filter: invert(1); }
+.brand-mark { font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; font-size: 1.35rem; display: inline-flex; align-items: center; gap: .55rem; }
+.brand-mark svg { flex: none; }
+.site-header .nav-link { font-weight: 500; padding-left: .9rem; padding-right: .9rem; border-bottom: 2px solid transparent; }
+.site-header .nav-link.active { border-bottom-color: var(--gold); }
+.site-header .dropdown-menu { --bs-dropdown-border-radius: 4px; }
+.site-header .btn-gold { --bs-btn-padding-y: .3rem; }
+
+/* ---- Layout helpers ----------------------------------------------------- */
+main { min-height: 62vh; }
+.page-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.page-head p { margin: .35rem 0 0; color: var(--ink-soft); max-width: 62ch; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; }
+.panel-tight { padding: 1rem; }
+.panel h2 { font-size: 1.3rem; margin-bottom: .75rem; }
+.site-footer { border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .92rem; }
+
+/* ---- Spec strip: silkscreen-style ruled cells ---------------------------- */
+.spec-strip { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; margin: 0; border: 1px solid var(--line-strong); border-radius: 3px; background: var(--pcb-tint); width: max-content; max-width: 100%; }
+.spec-strip > div { padding: .28rem .7rem; font-weight: 600; font-size: .95rem; font-variant-numeric: tabular-nums; color: var(--pcb-deep); white-space: nowrap; }
+.spec-strip > div + div { border-left: 1px solid var(--line-strong); }
+.spec-strip dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.spec-strip dd { margin: 0; }
+@media (max-width: 420px) { .spec-strip > div { padding: .28rem .5rem; font-size: .86rem; } }
+
+/* ---- Product cards --------------------------------------------------------- */
+.product-card { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: .8rem; height: 100%; transition: border-color .15s; }
+.product-card:hover { border-color: var(--pcb); }
+.product-card .brand { color: var(--ink-soft); font-weight: 500; font-size: .95rem; }
+.product-card h2 { font-size: 1.3rem; margin: 0; line-height: 1.2; }
+.product-card h2 a { color: var(--ink); text-decoration: none; }
+.product-card h2 a:hover { color: var(--pcb); text-decoration: underline; }
+.product-card .stretch { margin-top: auto; }
+.price { font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: 0; }
+.price-lg { font-size: 1.9rem; }
+.price-xl { font-size: 2.6rem; }
+.muted { color: var(--ink-soft); }
+.small-muted { color: var(--ink-soft); font-size: .9rem; }
+
+/* ---- Deal badges: gold is reserved for deals ------------------------------- */
+.badge-deal, .badge-great, .badge-reached, .badge-wait {
+  display: inline-block; font-weight: 600; font-size: .85rem; padding: .18rem .55rem; border-radius: 3px; line-height: 1.35; white-space: nowrap;
+}
+.badge-deal { background: var(--gold-tint); color: var(--gold-ink); border: 1px solid var(--gold); }
+.badge-great { background: var(--gold); color: var(--ink); border: 1px solid var(--gold); }
+.badge-reached { background: var(--pcb); color: #fff; border: 1px solid var(--pcb); }
+.badge-wait { background: #fff; color: var(--ink-soft); border: 1px solid var(--line-strong); }
+
+/* ---- Compare bar ------------------------------------------------------------- */
+.compare-bar { position: sticky; bottom: 0; z-index: 20; background: var(--pcb-deep); color: #fff; border-top: 3px solid var(--gold); }
+.compare-bar .btn { --bs-btn-padding-y: .35rem; }
+.compare-bar .btn:disabled { opacity: .5; }
+
+/* ---- Tables --------------------------------------------------------------------- */
+.table { --bs-table-bg: transparent; }
+.data-table th { font-weight: 600; color: var(--ink-soft); font-size: .92rem; white-space: nowrap; }
+.data-table td, .data-table th { vertical-align: middle; }
+.data-table .num { text-align: right; }
+.compare-table { min-width: 560px; }
+.compare-table th[scope="row"] { position: sticky; left: 0; background: #fff; font-weight: 600; color: var(--ink-soft); min-width: 9.5rem; z-index: 1; }
+.compare-table td { min-width: 11rem; }
+.compare-table .num { text-align: left; }
+.best-cell { background: var(--pcb-tint); font-weight: 700; }
+.best-tag { display: inline-block; margin-left: .45rem; font-size: .78rem; font-weight: 600; color: var(--pcb); border: 1px solid var(--pcb); border-radius: 3px; padding: 0 .35rem; vertical-align: .1em; }
+
+/* ---- Home hero ------------------------------------------------------------------- */
+.hero { padding: 2.5rem 0 1.5rem; }
+.hero p.lead { color: var(--ink-soft); max-width: 46ch; font-size: 1.15rem; }
+.stat-row { display: flex; flex-wrap: wrap; gap: .5rem 2rem; margin: 1.5rem 0 0; padding: 0; list-style: none; color: var(--ink-soft); }
+.stat-row strong { color: var(--ink); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+/* ---- Price chart ---------------------------------------------------------------- */
+.chart-wrap { position: relative; overflow-x: auto; }
+/* On phones the chart keeps a readable minimum width and scrolls inside its own box. */
+.price-chart-svg { width: 100%; min-width: 600px; height: auto; display: block; touch-action: pan-y; }
+.chart-tip { position: absolute; pointer-events: none; z-index: 5; background: #fff; border: 1px solid var(--line-strong); border-radius: 4px; padding: .5rem .65rem; font-size: .9rem; min-width: 11rem; box-shadow: 0 2px 8px rgba(21,32,27,.12); }
+.chart-tip[hidden] { display: none; }
+.chart-tip .tip-date { color: var(--ink-soft); margin-bottom: .25rem; }
+.chart-tip .tip-row { display: flex; align-items: center; gap: .5rem; justify-content: space-between; }
+.chart-tip .tip-name { display: inline-flex; align-items: center; gap: .45rem; color: var(--ink-soft); }
+.chart-tip .tip-key { display: inline-block; width: 14px; height: 0; border-top: 3px solid; border-radius: 2px; }
+.chart-tip .tip-val { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; list-style: none; padding: 0; margin: 0 0 .5rem; font-size: .92rem; color: var(--ink-soft); }
+.legend .key { display: inline-block; width: 16px; height: 0; border-top: 3px solid; border-radius: 2px; margin-right: .4rem; vertical-align: middle; }
+
+/* ---- Forms ---------------------------------------------------------------------------- */
+.form-label { font-weight: 600; }
+.form-control, .form-select { border-color: var(--line-strong); background-color: #fff; }
+.form-control:focus, .form-select:focus { border-color: var(--pcb); box-shadow: 0 0 0 .2rem rgba(201,162,63,.35); }
+.form-panel { max-width: 46rem; }
+.auth-panel { max-width: 28rem; margin: 2rem auto; }
+
+/* ---- Messages ------------------------------------------------------------------------------ */
+.alert { border-radius: 4px; }
+
+/* ---- Pagination -------------------------------------------------------------------------------- */
+.pagination { --bs-pagination-color: var(--pcb); --bs-pagination-hover-color: var(--pcb-deep); --bs-pagination-active-bg: var(--pcb); --bs-pagination-active-border-color: var(--pcb); --bs-pagination-border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media print { .site-header, .site-footer, .compare-bar, .btn { display: none !important; } }

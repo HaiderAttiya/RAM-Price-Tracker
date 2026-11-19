@@ -1,0 +1,37 @@
+
+=== A. Indexes in the application database (created by `python manage.py migrate`) ===
+
+products  (49 documents)
+  _id_                          {"_id":1}
+  product_variant_unique        {"brand":1,"model":1,"ddr_generation":1,"capacity_gb":1,"modules":1,"speed_mhz":1,"cas_latency":1}   UNIQUE
+  prod_ddr_cap_price_idx        {"ddr_generation":1,"capacity_gb":1,"price":1}
+
+price_records  (4119 documents)
+  _id_                          {"_id":1}
+  price_product_time_idx        {"product_id":1,"recorded_at":-1}
+  price_time_idx                {"recorded_at":1}
+
+watchlist  (5 documents)
+  _id_                          {"_id":1}
+  watchlist_product_id_e5ec9534 {"product_id":1}
+  watchlist_user_product_uniq   {"user_id":1,"product_id":1}   UNIQUE
+
+=== B. The same indexes written as raw MongoDB commands (scratch database) ===
+
+products
+  _id_                          {"_id":1}
+  prod_ddr_cap_price_idx        {"ddr_generation":1,"capacity_gb":1,"price":1}
+  product_variant_unique        {"brand":1,"model":1,"ddr_generation":1,"capacity_gb":1,"modules":1,"speed_mhz":1,"cas_latency":1}   UNIQUE
+
+price_records
+  _id_                          {"_id":1}
+  price_product_time_idx        {"product_id":1,"recorded_at":-1}
+  price_time_idx                {"recorded_at":1}
+
+watchlist
+  _id_                          {"_id":1}
+  watchlist_user_product_uniq   {"user_id":1,"product_id":1}   UNIQUE
+  product_id_1                  {"product_id":1}
+
+=== C. Unique indexes enforce data integrity ===
+Duplicate kit rejected: E11000 (duplicate key)

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load tracker_extras %}
+{% block title %}Deals | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Current deals</h1>
+    <p>A kit is a <strong>deal</strong> when its best price is at least {{ DEAL_THRESHOLD_PERCENT }}% below that retailer's average over the last {{ DEAL_WINDOW_DAYS }} days, and a <strong>great deal</strong> at {% widthratio DEAL_THRESHOLD_PERCENT 1 2 %}% or more. At least {{ DEAL_MIN_RECORDS }} records are needed.</p>
+  </div>
+</div>
+
+{% if deals %}
+<div class="panel p-0">
+  <div class="table-responsive">
+    <table class="table data-table table-hover mb-0">
+      <thead>
+        <tr><th scope="col" class="ps-3">Kit</th><th scope="col">Retailer</th><th scope="col" class="num">Price now</th><th scope="col" class="num">{{ DEAL_WINDOW_DAYS }}-day average</th><th scope="col">Verdict</th></tr>
+      </thead>
+      <tbody>
+      {% for product, deal in deals %}
+        <tr>
+          <td class="ps-3"><a href="{{ product.get_absolute_url }}">{{ product.brand }} {{ product.model }}</a><div class="small-muted">{{ product.capacity_display }}, {{ product.ddr_generation }}-{{ product.speed_mhz }} CL{{ product.cas_latency }}</div></td>
+          <td>{{ product.best_retailer }}</td>
+          <td class="num num">{{ product.price|money }}</td>
+          <td class="num num">{{ deal.baseline_price|money }}</td>
+          <td>{% include "tracker/_deal_badge.html" %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="panel text-center py-5">
+  <h2 class="h4">No deals right now</h2>
+  <p class="muted">No kit is {{ DEAL_THRESHOLD_PERCENT }}% below its usual price. Add products to your watchlist to be flagged as soon as one reaches your target.</p>
+  <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Browse products</a>
+</div>
+{% endif %}
+{% endblock %}

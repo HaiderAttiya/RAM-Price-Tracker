@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load tracker_extras %}
+{% block title %}Delete price record | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+  <h1 class="h2">Delete this price record?</h1>
+  <p class="mb-1"><strong>{{ object.product }}</strong></p>
+  <p>{{ object.price|money }} at {{ object.retailer }} on {{ object.recorded_at|date:"d M Y, H:i" }}</p>
+  {% if is_only_record %}
+    <div class="alert alert-warning">This is the only record for the product. A product needs at least one price record, so it can not be deleted.</div>
+    <a class="btn btn-outline-secondary" href="{{ object.product.get_absolute_url }}#history">Back to the product</a>
+  {% else %}
+    <p>The product's best price will be recalculated from the remaining records.</p>
+    <form method="post" class="d-flex gap-2">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Delete record</button>
+      <a class="btn btn-outline-secondary" href="{{ object.product.get_absolute_url }}#history">Keep it</a>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

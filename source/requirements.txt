@@ -1,0 +1,9 @@
+# RAM Price Tracker - Python dependencies (tested with Python 3.13; needs Python 3.10+)
+# The django-mongodb-backend minor version must match the Django minor version (5.2.x <-> 5.2.x).
+Django==5.2.19
+django-mongodb-backend==5.2.4
+pymongo==4.20.1
+# installed automatically by the packages above; pinned for reproducible installs
+asgiref==3.13.0
+sqlparse==0.6.1
+dnspython==2.9.2

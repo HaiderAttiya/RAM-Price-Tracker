@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static tracker_extras %}
+{% block title %}{{ product.brand }} {{ product.model }} {{ product.capacity_gb }}GB | RAM Price Tracker{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small-muted mb-2">
+    <li class="breadcrumb-item"><a href="{% url 'tracker:product_list' %}">Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ product.brand }} {{ product.model }}</li>
+  </ol>
+</nav>
+
+<div class="page-head">
+  <div>
+    <div class="muted fw-medium">{{ product.brand }}</div>
+    <h1>{{ product.model }}</h1>
+    <div class="mt-2 d-flex flex-wrap align-items-center gap-3">
+      {% include "tracker/_spec_strip.html" %}
+      <span class="muted">{{ product.capacity_display }}, {{ product.voltage }} V</span>
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    {% if user.is_authenticated %}
+      <a class="btn btn-primary" href="{% url 'tracker:price_create' product.pk %}">Record a price</a>
+      <a class="btn btn-outline-primary" href="{% url 'tracker:product_update' product.pk %}">Edit</a>
+      <a class="btn btn-outline-danger" href="{% url 'tracker:product_delete' product.pk %}">Delete</a>
+    {% else %}
+      <a class="btn btn-outline-primary" href="{% url 'login' %}?next={{ request.path }}">Log in to track this kit</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="panel mb-4" aria-labelledby="chart-heading">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <h2 id="chart-heading" class="mb-0">Price history</h2>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Chart date range">
+          {% for key, label in range_options %}
+            <a class="btn {% if key == range_key %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?range={{ key }}#chart-heading" {% if key == range_key %}aria-current="true"{% endif %}>{{ label }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      {% if chart %}
+        <ul class="legend" aria-label="Retailers">
+          {% for s in chart.series %}<li><span class="key" style="border-top-color: {{ s.color }}"></span>{{ s.name }}</li>{% endfor %}
+        </ul>
+        <div class="chart-wrap">{{ chart.svg }}</div>
+        {{ chart.data|json_script:"price-chart-data" }}
+        <p class="small-muted mt-2 mb-0">Hover the chart (or focus it and use the arrow keys) to read prices on any date. The same figures are in the table below.</p>
+      {% else %}
+        <p class="mb-0">No prices were recorded in this period. Choose a longer range.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel" id="history" aria-labelledby="history-heading">
+      <div class="d-flex justify-content-between align-items-baseline">
+        <h2 id="history-heading">Price records <span class="small-muted fw-normal fs-6">({{ record_total }})</span></h2>
+      </div>
+      <div class="table-responsive">
+        <table class="table data-table table-hover mb-0">
+          <thead>
+            <tr><th scope="col">Date</th><th scope="col">Retailer</th><th scope="col" class="num">Price</th>{% if user.is_authenticated %}<th scope="col"><span class="visually-hidden">Actions</span></th>{% endif %}</tr>
+          </thead>
+          <tbody>
+          {% for record in history_page %}
+            <tr>
+              <td>{{ record.recorded_at|date:"d M Y, H:i" }}</td>
+              <td>{% if record.retailer_url %}<a href="{{ record.retailer_url }}" rel="noopener noreferrer" target="_blank">{{ record.retailer }}</a>{% else %}{{ record.retailer }}{% endif %}</td>
+              <td class="num num">{{ record.price|money }}</td>
+              {% if user.is_authenticated %}
+              <td class="text-end text-nowrap">
+                <a href="{% url 'tracker:price_update' record.pk %}">Edit<span class="visually-hidden"> record from {{ record.recorded_at|date:"d M Y" }}</span></a>
+                <span class="text-body-tertiary px-1">|</span>
+                <a class="text-danger" href="{% url 'tracker:price_delete' record.pk %}">Delete<span class="visually-hidden"> record from {{ record.recorded_at|date:"d M Y" }}</span></a>
+              </td>
+              {% endif %}
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No price records yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-3">{% include "tracker/_pagination.html" with page_obj=history_page param="history" qs="range="|add:range_key anchor="#history" %}</div>
+    </section>
+  </div>
+
+  <div class="col-lg-4">
+    <section class="panel mb-4" aria-labelledby="best-heading">
+      <h2 id="best-heading" class="visually-hidden">Best current price</h2>
+      <div class="price price-xl">{{ product.price|money }}</div>
+      <div class="muted mt-1">at {{ product.best_retailer }}, {{ product.price_per_gb|money }} per GB</div>
+      <div class="mt-2">{% include "tracker/_deal_badge.html" %}</div>
+
+      <p class="small-muted mt-3 mb-0">
+        {% if deal.level == "unknown" %}
+          Not enough history yet to judge this price: {{ product.best_retailer }} has {{ deal.record_count }} record{{ deal.record_count|pluralize }} in the last {{ DEAL_WINDOW_DAYS }} days and a verdict needs at least {{ DEAL_MIN_RECORDS }}.
+        {% else %}
+          {{ product.best_retailer }}'s average over the last {{ DEAL_WINDOW_DAYS }} days is {{ deal.baseline_price|money }} ({{ deal.record_count }} records), so today's price is
+          {% if deal.discount_percent >= 0 %}{{ deal.discount_percent|percent }} below it{% else %}{{ deal.discount_percent|abs_value|percent }} above it{% endif %}.
+          A deal needs {{ DEAL_THRESHOLD_PERCENT }}% or more below.
+        {% endif %}
+      </p>
+    </section>
+
+    <section class="panel mb-4" aria-labelledby="retailers-heading">
+      <h2 id="retailers-heading">By retailer</h2>
+      <table class="table data-table mb-0">
+        <thead class="visually-hidden"><tr><th scope="col">Retailer</th><th scope="col">Latest price</th></tr></thead>
+        <tbody>
+        {% for record in retailer_prices %}
+          <tr>
+            <td>{{ record.retailer }}<div class="small-muted">{{ record.recorded_at|date:"d M Y" }}</div></td>
+            <td class="num num">{{ record.price|money }}{% if forloop.first %}<span class="best-tag">Lowest</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel mb-4" aria-labelledby="watch-heading">
+      <h2 id="watch-heading">Watchlist</h2>
+      {% if user.is_authenticated %}
+        {% if watch_item %}
+          <p class="mb-2">
+            {% if watch_item.target_reached %}<span class="badge-reached">Target reached</span>{% else %}<span class="badge-wait">Waiting for {{ watch_item.target_price|money }}</span>{% endif %}
+          </p>
+          <p class="small-muted">Your target is {{ watch_item.target_price|money }}. You will see this product flagged on your watchlist when the best price is at or below it.</p>
+        {% else %}
+          <p class="small-muted">Save this kit and set the price you want to pay.</p>
+        {% endif %}
+        <form method="post" action="{% url 'tracker:watchlist_add' product.pk %}">
+          {% csrf_token %}
+          {% include "tracker/_field.html" with field=watch_form.target_price %}
+          <button type="submit" class="btn btn-primary">{% if watch_item %}Update target{% else %}Add to watchlist{% endif %}</button>
+          {% if watch_item %}<a class="btn btn-outline-danger" href="{% url 'tracker:watchlist_delete' watch_item.pk %}">Remove</a>{% endif %}
+        </form>
+      {% else %}
+        <p>Log in to save this kit and set a target price.</p>
+        <a class="btn btn-primary" href="{% url 'login' %}?next={{ request.path }}">Log in</a>
+        <a class="btn btn-outline-primary" href="{% url 'signup' %}">Create account</a>
+      {% endif %}
+    </section>
+
+    <section class="panel" aria-labelledby="derived-heading">
+      <h2 id="derived-heading">Calculated values</h2>
+      <dl class="row mb-0">
+        <dt class="col-7 fw-semibold muted">True latency</dt><dd class="col-5 text-end num mb-2">{{ product.latency_ns }} ns</dd>
+        <dt class="col-7 fw-semibold muted">Price per GB</dt><dd class="col-5 text-end num mb-2">{{ product.price_per_gb|money }}</dd>
+        <dt class="col-7 fw-semibold muted">Price last changed</dt><dd class="col-5 text-end mb-0">{{ product.price_updated_at|date:"d M Y" }}</dd>
+      </dl>
+      <p class="small-muted mt-3 mb-0">True latency = CL × 2000 ÷ speed in MHz. Lower is faster, and it lets you compare kits of different speeds fairly.</p>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/price-chart.js' %}"></script>{% endblock %}

@@ -1,0 +1,89 @@
+{% load static tracker_extras %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}RAM Price Tracker{% endblock %}</title>
+  <meta name="description" content="Compare RAM prices, follow price history and spot deals.">
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+  <a class="visually-hidden-focusable position-absolute p-2 bg-white" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="navbar navbar-expand-lg" aria-label="Main navigation">
+      <div class="container">
+        <a class="navbar-brand brand-mark" href="{% url 'tracker:home' %}">
+          <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true">
+            <rect x="0.75" y="0.75" width="28.5" height="13.5" rx="1.5" fill="none" stroke="#c9a23f" stroke-width="1.5"/>
+            <rect x="4" y="4" width="5" height="6" fill="#c9a23f"/><rect x="12" y="4" width="5" height="6" fill="#c9a23f"/><rect x="20" y="4" width="5" height="6" fill="#c9a23f"/>
+            <path d="M3 15v4M7 15v4M11 15v4M19 15v4M23 15v4M27 15v4" stroke="#c9a23f" stroke-width="1.5"/>
+          </svg>
+          RAM Price Tracker
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link {% nav_active 'product_list' 'product_detail' 'compare' %}" href="{% url 'tracker:product_list' %}">Products</a></li>
+            <li class="nav-item"><a class="nav-link {% nav_active 'deals' %}" href="{% url 'tracker:deals' %}">Deals</a></li>
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link {% nav_active 'watchlist' 'watchlist_update' 'watchlist_delete' %}" href="{% url 'tracker:watchlist' %}">Watchlist</a></li>
+            {% endif %}
+          </ul>
+          <ul class="navbar-nav align-items-lg-center gap-lg-2">
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a class="btn btn-gold btn-sm" href="{% url 'tracker:product_create' %}">Add product</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ user.username }}</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'tracker:watchlist' %}">My watchlist</a></li>
+                {% if user.is_staff %}<li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin site</a></li>{% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+                    <button type="submit" class="dropdown-item">Log out</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link {% nav_active 'login' %}" href="{% url 'login' %}">Log in</a></li>
+            <li class="nav-item"><a class="btn btn-gold btn-sm" href="{% url 'signup' %}">Create account</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main" class="container py-4 flex-grow-1">
+    {% if messages %}
+      <div class="mb-3" aria-live="polite">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer py-3 mt-4">
+    <div class="container d-flex flex-wrap justify-content-between gap-2">
+      <span>RAM Price Tracker, an IT7405 project built with Django, MongoDB and Bootstrap.</span>
+      <span>Prices in the demo database are generated sample data, not live retailer prices.</span>
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

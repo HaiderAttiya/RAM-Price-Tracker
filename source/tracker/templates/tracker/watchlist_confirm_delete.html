@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Remove from watchlist | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+  <h1 class="h2">Remove from your watchlist?</h1>
+  <p class="fs-5"><strong>{{ object.product }}</strong></p>
+  <p>The product and its price history stay in the catalogue. Only your saved target is removed.</p>
+  <form method="post" class="d-flex gap-2">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Remove</button>
+    <a class="btn btn-outline-secondary" href="{% url 'tracker:watchlist' %}">Keep it</a>
+  </form>
+</div>
+{% endblock %}

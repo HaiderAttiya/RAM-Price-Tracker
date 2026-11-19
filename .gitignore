@@ -1,0 +1,32 @@
+# Python environments
+.venv/
+venv/
+**/.venv/
+**/venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Secrets and environment files
+.env
+**/.env
+
+# Django generated files
+db.sqlite3
+staticfiles/
+media/
+
+# Test output
+.coverage
+htmlcov/
+
+# IDE and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local database files
+data/

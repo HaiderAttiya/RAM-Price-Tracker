@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load tracker_extras %}
+{% block title %}RAM products | RAM Price Tracker{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>RAM products</h1>
+    <p>{{ total }} kit{{ total|pluralize }}{% if has_filters %} match your filters{% else %} in the catalogue{% endif %}. Tick two to four kits to compare them side by side.</p>
+  </div>
+  {% if user.is_authenticated %}<a class="btn btn-primary" href="{% url 'tracker:product_create' %}">Add product</a>{% endif %}
+</div>
+
+<form method="get" class="panel panel-tight mb-3" aria-label="Search and filter products">
+  {% include "tracker/_form_errors.html" with form=filter_form %}
+  <div class="row g-3 align-items-end">
+    <div class="col-12 col-lg-4">{% include "tracker/_field.html" with field=filter_form.q %}</div>
+    <div class="col-6 col-lg-2">{% include "tracker/_field.html" with field=filter_form.brand %}</div>
+    <div class="col-6 col-lg-2">{% include "tracker/_field.html" with field=filter_form.ddr_generation %}</div>
+    <div class="col-6 col-lg-2">{% include "tracker/_field.html" with field=filter_form.capacity_gb %}</div>
+    <div class="col-6 col-lg-2">{% include "tracker/_field.html" with field=filter_form.sort %}</div>
+    <div class="col-6 col-md-3 col-lg-2">{% include "tracker/_field.html" with field=filter_form.min_price %}</div>
+    <div class="col-6 col-md-3 col-lg-2">{% include "tracker/_field.html" with field=filter_form.max_price %}</div>
+    <div class="col-12 col-md-6 col-lg-8 mb-3 d-flex gap-2 justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Apply filters</button>
+      <a class="btn btn-outline-secondary" href="{% url 'tracker:product_list' %}">Reset</a>
+    </div>
+  </div>
+</form>
+
+{# The compare checkboxes inside each card point at this form with the HTML form="" attribute #}
+<form method="get" action="{% url 'tracker:compare' %}" id="compare-form" data-max="{{ max_compare }}"></form>
+
+{% if products %}
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+    {% for product in products %}{% include "tracker/_product_card.html" %}{% endfor %}
+  </div>
+  <div class="mt-4">{% include "tracker/_pagination.html" with param="page" qs=querystring %}</div>
+{% else %}
+  <div class="panel text-center py-5">
+    <h2 class="h4">No products match these filters</h2>
+    <p class="muted">Try a different search term, widen the price range, or clear the filters.</p>
+    <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Clear filters</a>
+  </div>
+{% endif %}
+
+{% if products %}
+<div class="compare-bar mt-4">
+  <div class="container py-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <span data-compare-count aria-live="polite">Tick 2 to {{ max_compare }} products to compare them side by side.</span>
+    <button type="submit" form="compare-form" class="btn btn-gold" data-compare-button>Compare selected</button>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}<script src="{% static 'js/site.js' %}"></script>
+{% endblock %}

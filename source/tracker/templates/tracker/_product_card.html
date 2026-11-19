@@ -1,0 +1,27 @@
+{% load tracker_extras %}
+<div class="col">
+  <article class="product-card">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+      <div>
+        <div class="brand">{{ product.brand }}</div>
+        <h2><a href="{{ product.get_absolute_url }}">{{ product.model }}</a></h2>
+        <div class="small-muted">{{ product.capacity_display }}</div>
+      </div>
+      <div class="form-check pt-1">
+        <input class="form-check-input" type="checkbox" name="ids" value="{{ product.pk }}" form="compare-form" id="cmp-{{ product.pk }}">
+        <label class="form-check-label" for="cmp-{{ product.pk }}">Compare<span class="visually-hidden"> {{ product }}</span></label>
+      </div>
+    </div>
+    {% include "tracker/_spec_strip.html" %}
+    <div class="stretch">
+      <div class="d-flex align-items-baseline justify-content-between gap-2 flex-wrap">
+        <span class="price price-lg">{{ product.price|money }}</span>
+        <span class="small-muted">at {{ product.best_retailer }}, {{ product.price_per_gb|money }} per GB</span>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mt-2 align-items-center">
+        {% include "tracker/_deal_badge.html" with deal=product.deal %}
+        {% if product.is_watched %}<span class="badge-wait">On your watchlist</span>{% endif %}
+      </div>
+    </div>
+  </article>
+</div>

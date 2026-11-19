@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Log in | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="panel auth-panel">
+  <h1 class="h2">Log in</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.errors %}<div class="alert alert-danger" role="alert">That username and password do not match. Check them and try again.</div>{% endif %}
+    {% for field in form %}{% include "tracker/_field.html" %}{% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn-primary w-100">Log in</button>
+  </form>
+  <p class="mt-3 mb-0 small-muted">New here? <a href="{% url 'signup' %}">Create an account</a> to save products and set target prices.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% comment %}
+  Previous / Next pager.  Context: page_obj, param (query-string name), qs (extra query string, may be empty), anchor (optional "#id").
+{% endcomment %}
+{% if page_obj.has_other_pages %}
+<nav aria-label="Pagination" class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+  <ul class="pagination mb-0">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?{% if qs %}{{ qs }}&amp;{% endif %}{{ param }}={{ page_obj.previous_page_number }}{{ anchor }}">Previous</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Previous</span></li>
+    {% endif %}
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?{% if qs %}{{ qs }}&amp;{% endif %}{{ param }}={{ page_obj.next_page_number }}{{ anchor }}">Next</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Next</span></li>
+    {% endif %}
+  </ul>
+  <span class="small-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+</nav>
+{% endif %}

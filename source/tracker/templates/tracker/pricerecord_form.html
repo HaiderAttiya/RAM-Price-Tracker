@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ heading }}</h1>
+    <p>for <a href="{{ product.get_absolute_url }}">{{ product }}</a></p>
+  </div>
+</div>
+<form method="post" class="panel form-panel" novalidate>
+  {% csrf_token %}
+  {% include "tracker/_form_errors.html" %}
+  <div class="row">
+    <div class="col-sm-6">{% include "tracker/_field.html" with field=form.retailer %}</div>
+    <div class="col-sm-6">{% include "tracker/_field.html" with field=form.price %}</div>
+    <div class="col-sm-6">{% include "tracker/_field.html" with field=form.recorded_at %}</div>
+    <div class="col-12">{% include "tracker/_field.html" with field=form.retailer_url %}</div>
+  </div>
+  <p class="small-muted">The product's best current price is recalculated automatically: the lowest of each retailer's most recent price.</p>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+    <a class="btn btn-outline-secondary" href="{{ product.get_absolute_url }}#history">Cancel</a>
+  </div>
+</form>
+{% endblock %}

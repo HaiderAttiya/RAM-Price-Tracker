@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load tracker_extras %}
+{% block title %}My watchlist | RAM Price Tracker{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>My watchlist</h1>
+    <p>{% if rows %}{{ reached_count }} of {{ rows|length }} kit{{ rows|length|pluralize }} {{ reached_count|pluralize:"has,have" }} reached your target price.{% else %}Save kits here and set the price you would pay.{% endif %}</p>
+  </div>
+</div>
+
+{% if rows %}
+<div class="panel p-0">
+  <div class="table-responsive">
+    <table class="table data-table table-hover mb-0">
+      <thead>
+        <tr><th scope="col" class="ps-3">Kit</th><th scope="col" class="num">Best price</th><th scope="col" class="num">Your target</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
+      </thead>
+      <tbody>
+      {% for row in rows %}
+        <tr>
+          <td class="ps-3"><a href="{{ row.product.get_absolute_url }}">{{ row.product.brand }} {{ row.product.model }}</a><div class="small-muted">{{ row.product.capacity_display }}, {{ row.product.ddr_generation }}-{{ row.product.speed_mhz }} at {{ row.product.best_retailer }}</div></td>
+          <td class="num num">{{ row.product.price|money }}</td>
+          <td class="num num">{{ row.item.target_price|money }}</td>
+          <td>
+            {% if row.gap <= 0 %}<span class="badge-reached">Target reached</span>{% else %}<span class="badge-wait">{{ row.gap|money }} above target</span>{% endif %}
+            {% include "tracker/_deal_badge.html" with deal=row.deal %}
+          </td>
+          <td class="text-end text-nowrap pe-3">
+            <a href="{% url 'tracker:watchlist_update' row.item.pk %}">Change target<span class="visually-hidden"> for {{ row.product }}</span></a>
+            <span class="text-body-tertiary px-1">|</span>
+            <a class="text-danger" href="{% url 'tracker:watchlist_delete' row.item.pk %}">Remove<span class="visually-hidden"> {{ row.product }}</span></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="panel text-center py-5">
+  <h2 class="h4">Your watchlist is empty</h2>
+  <p class="muted">Open any product and choose <strong>Add to watchlist</strong>, then enter the price you want to pay.</p>
+  <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Browse products</a>
+</div>
+{% endif %}
+{% endblock %}

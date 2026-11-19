@@ -1,0 +1,1 @@
+{% load tracker_extras %}{% if deal.level == "great" %}<span class="badge-great">Great deal, {{ deal.discount_percent|percent }} below usual</span>{% elif deal.level == "deal" %}<span class="badge-deal">Deal, {{ deal.discount_percent|percent }} below usual</span>{% endif %}
