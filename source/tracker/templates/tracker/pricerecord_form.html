@@ -1,25 +1,50 @@
 {% extends "base.html" %}
 {% block title %}{{ heading }} | RAM Price Tracker{% endblock %}
 {% block content %}
-<div class="page-head">
-  <div>
-    <h1>{{ heading }}</h1>
-    <p>for <a href="{{ product.get_absolute_url }}">{{ product }}</a></p>
+
+<section class="price-form-heading">
+  <span class="section-label">PRICE MANAGEMENT</span>
+  <h1>{{ heading }}</h1>
+  <p>Add or update a price record for
+    <a href="{{ product.get_absolute_url }}">{{ product }}</a>.
+  </p>
+</section>
+
+<div class="price-form-layout">
+  <form method="post" class="panel price-form-panel" novalidate>
+    {% csrf_token %}
+    {% include "tracker/_form_errors.html" %}
+
+<div class="price-form-section">
+  <h2>Price information</h2>
+  <p>Enter the retailer and the price of this RAM product.</p>
+
+  <div class="row">
+    <div class="col-sm-6">
+      {% include "tracker/_field.html" with field=form.retailer %}
+    </div>
+    <div class="col-sm-6">
+      {% include "tracker/_field.html" with field=form.price %}
+    </div>
+    <div class="col-sm-6">
+      {% include "tracker/_field.html" with field=form.recorded_at %}
+    </div>
+    <div class="col-12">
+      {% include "tracker/_field.html" with field=form.retailer_url %}
+    </div>
   </div>
 </div>
-<form method="post" class="panel form-panel" novalidate>
-  {% csrf_token %}
-  {% include "tracker/_form_errors.html" %}
-  <div class="row">
-    <div class="col-sm-6">{% include "tracker/_field.html" with field=form.retailer %}</div>
-    <div class="col-sm-6">{% include "tracker/_field.html" with field=form.price %}</div>
-    <div class="col-sm-6">{% include "tracker/_field.html" with field=form.recorded_at %}</div>
-    <div class="col-12">{% include "tracker/_field.html" with field=form.retailer_url %}</div>
-  </div>
-  <p class="small-muted">The product's best current price is recalculated automatically: the lowest of each retailer's most recent price.</p>
-  <div class="d-flex gap-2">
-    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
-    <a class="btn btn-outline-secondary" href="{{ product.get_absolute_url }}#history">Cancel</a>
-  </div>
-</form>
+
+<div class="price-form-note">
+  <strong>How price updates work</strong>
+  <p>The product's best current price is updated automatically using the latest recorded price from each retailer.</p>
+</div>
+
+<div class="price-form-actions">
+  <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+  <a class="btn btn-outline-secondary" href="{{ product.get_absolute_url }}#history">Cancel</a>
+</div>
+
+  </form>
+</div>
 {% endblock %}

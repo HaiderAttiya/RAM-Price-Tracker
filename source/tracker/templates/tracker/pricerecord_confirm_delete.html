@@ -1,21 +1,53 @@
 {% extends "base.html" %}
 {% load tracker_extras %}
-{% block title %}Delete price record | RAM Price Tracker{% endblock %}
+{% block title %}Delete Price Record | RAM Price Tracker{% endblock %}
 {% block content %}
-<div class="panel form-panel">
-  <h1 class="h2">Delete this price record?</h1>
-  <p class="mb-1"><strong>{{ object.product }}</strong></p>
-  <p>{{ object.price|money }} at {{ object.retailer }} on {{ object.recorded_at|date:"d M Y, H:i" }}</p>
-  {% if is_only_record %}
-    <div class="alert alert-warning">This is the only record for the product. A product needs at least one price record, so it can not be deleted.</div>
-    <a class="btn btn-outline-secondary" href="{{ object.product.get_absolute_url }}#history">Back to the product</a>
-  {% else %}
-    <p>The product's best price will be recalculated from the remaining records.</p>
-    <form method="post" class="d-flex gap-2">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Delete record</button>
-      <a class="btn btn-outline-secondary" href="{{ object.product.get_absolute_url }}#history">Keep it</a>
-    </form>
-  {% endif %}
+
+<section class="delete-page">
+  <div class="panel delete-panel">
+    <div class="delete-icon">!</div>
+
+<span class="section-label">PRICE RECORD MANAGEMENT</span>
+<h1>Delete this price record?</h1>
+<p class="delete-description">Please review the record details before continuing.</p>
+
+<div class="delete-record-details">
+  <div>
+    <span>RAM product</span>
+    <strong>{{ object.product }}</strong>
+  </div>
+  <div>
+    <span>Recorded price</span>
+    <strong>{{ object.price|money }}</strong>
+  </div>
+  <div>
+    <span>Retailer</span>
+    <strong>{{ object.retailer }}</strong>
+  </div>
+  <div>
+    <span>Record date</span>
+    <strong>{{ object.recorded_at|date:"d M Y, H:i" }}</strong>
+  </div>
 </div>
+
+{% if is_only_record %}
+  <div class="delete-warning">
+    <strong>This record cannot be deleted.</strong>
+    <p>It is the only price record for this product. At least one price record must remain.</p>
+  </div>
+  <a class="btn btn-primary w-100" href="{{ object.product.get_absolute_url }}#history">Back to product</a>
+{% else %}
+  <div class="delete-warning">
+    <strong>Important</strong>
+    <p>Deleting this record cannot be undone. The product's best price will be recalculated using the remaining records.</p>
+  </div>
+  <form method="post" class="delete-actions">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete record</button>
+    <a class="btn btn-outline-secondary" href="{{ object.product.get_absolute_url }}#history">Keep this record</a>
+  </form>
+{% endif %}
+
+  </div>
+</section>
 {% endblock %}

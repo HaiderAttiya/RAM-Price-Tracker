@@ -1,15 +1,43 @@
+
 {% extends "base.html" %}
-{% block title %}Log in | RAM Price Tracker{% endblock %}
+
+{% block title %}Log In | RAM Price Tracker{% endblock %}
+
 {% block content %}
-<div class="panel auth-panel">
-  <h1 class="h2">Log in</h1>
-  <form method="post" novalidate>
-    {% csrf_token %}
-    {% if form.errors %}<div class="alert alert-danger" role="alert">That username and password do not match. Check them and try again.</div>{% endif %}
-    {% for field in form %}{% include "tracker/_field.html" %}{% endfor %}
-    <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit" class="btn btn-primary w-100">Log in</button>
-  </form>
-  <p class="mt-3 mb-0 small-muted">New here? <a href="{% url 'signup' %}">Create an account</a> to save products and set target prices.</p>
-</div>
+
+<section class="auth-page">
+  <div class="panel auth-panel">
+    <div class="auth-heading">
+      <span class="section-label">WELCOME BACK</span>
+      <h1>Log in to your account</h1>
+      <p>Access your saved RAM products and target prices.</p>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+          Your username or password is incorrect. Please try again.
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        {% include "tracker/_field.html" %}
+      {% endfor %}
+
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <button type="submit" class="btn btn-primary w-100 auth-submit">
+        Log In
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account?</p>
+      <a href="{% url 'signup' %}">Create an account</a>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

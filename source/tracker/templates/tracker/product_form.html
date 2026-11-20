@@ -1,62 +1,166 @@
+
 {% extends "base.html" %}
+
 {% block title %}{{ heading }} | RAM Price Tracker{% endblock %}
 
 {% block content %}
-<div class="page-head"><div><h1>{{ heading }}</h1></div></div>
 
-<div class="row g-4">
+<section class="product-form-heading">
+  <div>
+    <span class="section-label">PRODUCT MANAGEMENT</span>
+    <h1>{{ heading }}</h1>
+
+    {% if editing %}
+      <p>Update the product details below.</p>
+    {% else %}
+      <p>Add a RAM kit to the catalogue and enter its first recorded price.</p>
+    {% endif %}
+  </div>
+</section>
+
+<div class="row g-4 product-form-layout">
+
   <div class="col-lg-8">
-    <form method="post" class="panel form-panel" novalidate>
+    <form method="post" class="panel product-form-panel" novalidate>
       {% csrf_token %}
+
       {% include "tracker/_form_errors.html" %}
 
-      <h2>Identity</h2>
-      <div class="row">
-        <div class="col-md-5">{% include "tracker/_field.html" with field=form.brand %}</div>
-        <div class="col-md-7">{% include "tracker/_field.html" with field=form.model %}</div>
-      </div>
+      <section class="product-form-section">
+        <div class="product-form-section-heading">
+          <span class="product-form-number">01</span>
+          <div>
+            <h2>Product information</h2>
+            <p>Enter the RAM brand and model name.</p>
+          </div>
+        </div>
 
-      <h2 class="mt-2">Specifications</h2>
-      <div class="row">
-        <div class="col-sm-6 col-md-4">{% include "tracker/_field.html" with field=form.ddr_generation %}</div>
-        <div class="col-sm-6 col-md-4">{% include "tracker/_field.html" with field=form.capacity_gb %}</div>
-        <div class="col-sm-6 col-md-4">{% include "tracker/_field.html" with field=form.modules %}</div>
-        <div class="col-sm-6 col-md-4">{% include "tracker/_field.html" with field=form.speed_mhz %}</div>
-        <div class="col-sm-6 col-md-4">{% include "tracker/_field.html" with field=form.cas_latency %}</div>
-        <div class="col-sm-6 col-md-4">{% include "tracker/_field.html" with field=form.voltage %}</div>
-      </div>
+        <div class="row">
+          <div class="col-md-5">
+            {% include "tracker/_field.html" with field=form.brand %}
+          </div>
+
+          <div class="col-md-7">
+            {% include "tracker/_field.html" with field=form.model %}
+          </div>
+        </div>
+      </section>
+
+      <section class="product-form-section">
+        <div class="product-form-section-heading">
+          <span class="product-form-number">02</span>
+          <div>
+            <h2>RAM specifications</h2>
+            <p>Enter the technical details of the RAM kit.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6 col-md-4">
+            {% include "tracker/_field.html" with field=form.ddr_generation %}
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            {% include "tracker/_field.html" with field=form.capacity_gb %}
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            {% include "tracker/_field.html" with field=form.modules %}
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            {% include "tracker/_field.html" with field=form.speed_mhz %}
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            {% include "tracker/_field.html" with field=form.cas_latency %}
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            {% include "tracker/_field.html" with field=form.voltage %}
+          </div>
+        </div>
+      </section>
 
       {% if form.price %}
-      <h2 class="mt-2">First price</h2>
-      <div class="row">
-        <div class="col-sm-6">{% include "tracker/_field.html" with field=form.price %}</div>
-        <div class="col-sm-6">{% include "tracker/_field.html" with field=form.best_retailer %}</div>
-      </div>
+        <section class="product-form-section">
+          <div class="product-form-section-heading">
+            <span class="product-form-number">03</span>
+            <div>
+              <h2>First price</h2>
+              <p>Enter the initial price and the retailer selling it.</p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              {% include "tracker/_field.html" with field=form.price %}
+            </div>
+
+            <div class="col-sm-6">
+              {% include "tracker/_field.html" with field=form.best_retailer %}
+            </div>
+          </div>
+        </section>
       {% endif %}
 
-      <div class="d-flex gap-2 mt-2">
-        <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
-        <a class="btn btn-outline-secondary" href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'tracker:product_list' %}{% endif %}">Cancel</a>
+      <div class="product-form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ submit_label }}
+        </button>
+
+        <a class="btn btn-outline-secondary"
+           href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'tracker:product_list' %}{% endif %}">
+          Cancel
+        </a>
       </div>
     </form>
   </div>
 
   <div class="col-lg-4">
-    <aside class="panel" aria-labelledby="ranges-heading">
-      <h2 id="ranges-heading" class="h5">Accepted ranges</h2>
-      <p class="small-muted">Values are checked against what is normal for the DDR generation.</p>
-      <table class="table data-table small mb-0">
-        <thead><tr><th scope="col">Type</th><th scope="col">Speed (MHz)</th><th scope="col">CL</th><th scope="col">Volts</th></tr></thead>
-        <tbody>
-        {% for r in ranges %}
-          <tr><th scope="row">{{ r.generation }}</th><td>{{ r.speed.0 }} to {{ r.speed.1 }}</td><td>{{ r.cas.0 }} to {{ r.cas.1 }}</td><td>{{ r.voltage.0 }} to {{ r.voltage.1 }}</td></tr>
-        {% endfor %}
-        </tbody>
-      </table>
+    <aside class="panel product-ranges-panel" aria-labelledby="ranges-heading">
+      <span class="section-label">REFERENCE</span>
+      <h2 id="ranges-heading">Accepted RAM ranges</h2>
+
+      <p>
+        These are the allowed speed, latency and voltage ranges for each RAM generation.
+      </p>
+
+      <div class="table-responsive">
+        <table class="table product-ranges-table mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Type</th>
+              <th scope="col">Speed</th>
+              <th scope="col">CL</th>
+              <th scope="col">Volts</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for r in ranges %}
+              <tr>
+                <th scope="row">{{ r.generation }}</th>
+                <td>{{ r.speed.0 }}–{{ r.speed.1 }}</td>
+                <td>{{ r.cas.0 }}–{{ r.cas.1 }}</td>
+                <td>{{ r.voltage.0 }}–{{ r.voltage.1 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
       {% if editing %}
-      <p class="small-muted mt-3 mb-0">Prices are not edited here. Use <strong>Record a price</strong> on the product page so the price history stays accurate.</p>
+        <div class="product-form-note">
+          <strong>Price history</strong>
+          <p>
+            Product prices cannot be changed here. Use the Record a price option on the product page to add a new price record.
+          </p>
+        </div>
       {% endif %}
     </aside>
   </div>
+
 </div>
+
 {% endblock %}

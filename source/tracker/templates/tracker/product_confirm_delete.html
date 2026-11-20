@@ -1,14 +1,41 @@
 {% extends "base.html" %}
 {% block title %}Delete {{ object.brand }} {{ object.model }} | RAM Price Tracker{% endblock %}
 {% block content %}
-<div class="panel form-panel">
-  <h1 class="h2">Delete this product?</h1>
-  <p class="fs-5 mb-1"><strong>{{ object }}</strong></p>
-  <p>This also deletes its <strong>{{ record_count }}</strong> price record{{ record_count|pluralize }}{% if watcher_count %} and removes it from <strong>{{ watcher_count }}</strong> watchlist{{ watcher_count|pluralize }}{% endif %}. This can not be undone.</p>
-  <form method="post" class="d-flex gap-2">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Delete product</button>
-    <a class="btn btn-outline-secondary" href="{{ object.get_absolute_url }}">Keep it</a>
-  </form>
+
+<section class="delete-page">
+  <div class="panel delete-panel">
+    <div class="delete-icon">!</div>
+
+<span class="section-label">PRODUCT MANAGEMENT</span>
+<h1>Delete this product?</h1>
+<p class="delete-description">Please review what will be removed before continuing.</p>
+
+<div class="delete-record-details">
+  <div>
+    <span>RAM product</span>
+    <strong>{{ object }}</strong>
+  </div>
+  <div>
+    <span>Price records</span>
+    <strong>{{ record_count }}</strong>
+  </div>
+  <div>
+    <span>Watchlist entries</span>
+    <strong>{{ watcher_count }}</strong>
+  </div>
 </div>
+
+<div class="delete-warning">
+  <strong>This action cannot be undone.</strong>
+  <p>Deleting this product will also delete all {{ record_count }} price record{{ record_count|pluralize }}{% if watcher_count %} and remove it from {{ watcher_count }} user watchlist{{ watcher_count|pluralize }}{% endif %}.</p>
+</div>
+
+<form method="post" class="delete-actions">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Delete product</button>
+  <a class="btn btn-outline-secondary" href="{{ object.get_absolute_url }}">Keep product</a>
+</form>
+
+  </div>
+</section>
 {% endblock %}

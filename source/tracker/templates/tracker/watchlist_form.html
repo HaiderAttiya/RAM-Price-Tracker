@@ -1,20 +1,39 @@
 {% extends "base.html" %}
 {% load tracker_extras %}
-{% block title %}Change target price | RAM Price Tracker{% endblock %}
+{% block title %}Change Target Price | RAM Price Tracker{% endblock %}
 {% block content %}
-<div class="page-head">
-  <div>
-    <h1>Change target price</h1>
-    <p><a href="{{ product.get_absolute_url }}">{{ product }}</a>. The best price is {{ product.price|money }} right now.</p>
+
+<section class="target-heading">
+  <span class="section-label">YOUR WATCHLIST</span>
+  <h1>Change target price</h1>
+  <p>Set the price you would like to pay for this RAM kit.</p>
+</section>
+
+<div class="panel target-form-panel">
+  <div class="target-product-info">
+    <span class="target-info-label">SELECTED PRODUCT</span>
+    <h2><a href="{{ product.get_absolute_url }}">{{ product }}</a></h2>
+    <div class="target-current-price">
+      <span>Current best price</span>
+      <strong>{{ product.price|money }}</strong>
+    </div>
   </div>
-</div>
-<form method="post" class="panel form-panel" novalidate>
-  {% csrf_token %}
-  {% include "tracker/_form_errors.html" %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "tracker/_form_errors.html" %}
+
+<div class="target-input-section">
+  <h2>Your target price</h2>
+  <p>Choose the maximum amount you want to pay for this product.</p>
   {% include "tracker/_field.html" with field=form.target_price %}
-  <div class="d-flex gap-2">
-    <button type="submit" class="btn btn-primary">Save target</button>
-    <a class="btn btn-outline-secondary" href="{% url 'tracker:watchlist' %}">Cancel</a>
-  </div>
-</form>
+</div>
+
+<div class="target-form-actions">
+  <button type="submit" class="btn btn-primary">Save target price</button>
+  <a class="btn btn-outline-secondary" href="{% url 'tracker:watchlist' %}">Cancel</a>
+</div>
+
+  </form>
+</div>
 {% endblock %}

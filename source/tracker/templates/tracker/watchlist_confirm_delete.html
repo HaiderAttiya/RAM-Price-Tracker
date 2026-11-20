@@ -1,14 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Remove from watchlist | RAM Price Tracker{% endblock %}
+{% block title %}Remove from Watchlist | RAM Price Tracker{% endblock %}
 {% block content %}
-<div class="panel form-panel">
-  <h1 class="h2">Remove from your watchlist?</h1>
-  <p class="fs-5"><strong>{{ object.product }}</strong></p>
-  <p>The product and its price history stay in the catalogue. Only your saved target is removed.</p>
-  <form method="post" class="d-flex gap-2">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Remove</button>
-    <a class="btn btn-outline-secondary" href="{% url 'tracker:watchlist' %}">Keep it</a>
-  </form>
+
+<section class="delete-page">
+  <div class="panel delete-panel">
+    <div class="delete-icon">!</div>
+
+<span class="section-label">WATCHLIST MANAGEMENT</span>
+<h1>Remove from your watchlist?</h1>
+<p class="delete-description">Are you sure you want to remove this saved product?</p>
+
+<div class="delete-record-details">
+  <div>
+    <span>RAM product</span>
+    <strong>{{ object.product }}</strong>
+  </div>
+  <div>
+    <span>Current status</span>
+    <strong>Saved in your watchlist</strong>
+  </div>
 </div>
+
+<div class="delete-warning">
+  <strong>Your product will not be deleted.</strong>
+  <p>The RAM product and its price history will remain in the catalogue. Only your saved target price will be removed.</p>
+</div>
+
+<form method="post" class="delete-actions">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Remove from watchlist</button>
+  <a class="btn btn-outline-secondary" href="{% url 'tracker:watchlist' %}">Keep it</a>
+</form>
+
+  </div>
+</section>
 {% endblock %}

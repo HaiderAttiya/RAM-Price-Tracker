@@ -1,40 +1,121 @@
+
 {% extends "base.html" %}
 {% load tracker_extras %}
-{% block title %}Deals | RAM Price Tracker{% endblock %}
-{% block content %}
-<div class="page-head">
-  <div>
-    <h1>Current deals</h1>
-    <p>A kit is a <strong>deal</strong> when its best price is at least {{ DEAL_THRESHOLD_PERCENT }}% below that retailer's average over the last {{ DEAL_WINDOW_DAYS }} days, and a <strong>great deal</strong> at {% widthratio DEAL_THRESHOLD_PERCENT 1 2 %}% or more. At least {{ DEAL_MIN_RECORDS }} records are needed.</p>
-  </div>
-</div>
 
-{% if deals %}
-<div class="panel p-0">
-  <div class="table-responsive">
-    <table class="table data-table table-hover mb-0">
-      <thead>
-        <tr><th scope="col" class="ps-3">Kit</th><th scope="col">Retailer</th><th scope="col" class="num">Price now</th><th scope="col" class="num">{{ DEAL_WINDOW_DAYS }}-day average</th><th scope="col">Verdict</th></tr>
-      </thead>
-      <tbody>
-      {% for product, deal in deals %}
-        <tr>
-          <td class="ps-3"><a href="{{ product.get_absolute_url }}">{{ product.brand }} {{ product.model }}</a><div class="small-muted">{{ product.capacity_display }}, {{ product.ddr_generation }}-{{ product.speed_mhz }} CL{{ product.cas_latency }}</div></td>
-          <td>{{ product.best_retailer }}</td>
-          <td class="num num">{{ product.price|money }}</td>
-          <td class="num num">{{ deal.baseline_price|money }}</td>
-          <td>{% include "tracker/_deal_badge.html" %}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+{% block title %}Current Deals | RAM Price Tracker{% endblock %}
+
+{% block content %}
+
+<section class="deals-heading">
+  <div>
+    <span class="section-label">SAVE ON YOUR NEXT UPGRADE</span>
+    <h1>Current RAM Deals</h1>
+    <p>Find RAM kits currently selling below their usual recorded prices.</p>
   </div>
-</div>
-{% else %}
-<div class="panel text-center py-5">
-  <h2 class="h4">No deals right now</h2>
-  <p class="muted">No kit is {{ DEAL_THRESHOLD_PERCENT }}% below its usual price. Add products to your watchlist to be flagged as soon as one reaches your target.</p>
-  <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Browse products</a>
-</div>
-{% endif %}
+
+  <a href="{% url 'tracker:product_list' %}" class="btn btn-primary">
+    Browse all products
+  </a>
+</section>
+
+<section class="deals-info-panel">
+  <div class="deals-info-icon">
+    <span>%</span>
+  </div>
+
+  <div>
+    <h2>How do we find deals?</h2>
+    <p>
+      A product is marked as a deal when its price is at least
+      <strong>{{ DEAL_THRESHOLD_PERCENT }}% below</strong> its average
+      over the last {{ DEAL_WINDOW_DAYS }} days.
+      Great deals are marked at
+      <strong>{% widthratio DEAL_THRESHOLD_PERCENT 1 2 %}% or more below</strong>.
+      At least {{ DEAL_MIN_RECORDS }} price records are needed.
+    </p>
+  </div>
+</section>
+
+<section class="deals-results">
+  <div class="deals-results-heading">
+    <div>
+      <h2>Available deals</h2>
+      <p>RAM kits with prices below their usual average.</p>
+    </div>
+
+    {% if deals %}
+      <span class="deals-count">{{ deals|length }} deal{{ deals|length|pluralize }}</span>
+    {% endif %}
+  </div>
+
+  {% if deals %}
+
+    <div class="table-responsive deals-table-wrapper">
+      <table class="table deals-table mb-0">
+        <thead>
+          <tr>
+            <th scope="col">RAM product</th>
+            <th scope="col">Retailer</th>
+            <th scope="col">Current price</th>
+            <th scope="col">Usual average</th>
+            <th scope="col">Deal status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for product, deal in deals %}
+            <tr>
+              <td>
+                <a class="deals-product-name" href="{{ product.get_absolute_url }}">
+                  {{ product.brand }} {{ product.model }}
+                </a>
+
+                <span class="deals-product-specs">
+                  {{ product.capacity_display }} · {{ product.ddr_generation }}
+                  · {{ product.speed_mhz }} MHz · CL{{ product.cas_latency }}
+                </span>
+              </td>
+
+              <td>
+                <span class="deals-retailer">{{ product.best_retailer }}</span>
+              </td>
+
+              <td>
+                <strong class="deals-current-price">
+                  {{ product.price|money }}
+                </strong>
+              </td>
+
+              <td>
+                <span class="deals-average-price">
+                  {{ deal.baseline_price|money }}
+                </span>
+              </td>
+
+              <td>
+                {% include "tracker/_deal_badge.html" %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  {% else %}
+
+    <div class="panel deals-empty-state">
+      <div class="deals-empty-icon">%</div>
+      <h2>No deals right now</h2>
+      <p>
+        No RAM kits currently meet our deal requirements.
+        Check back later or browse the catalogue.
+      </p>
+      <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">
+        Browse RAM products
+      </a>
+    </div>
+
+  {% endif %}
+</section>
+
 {% endblock %}

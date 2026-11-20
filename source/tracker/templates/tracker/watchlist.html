@@ -1,47 +1,146 @@
+
 {% extends "base.html" %}
 {% load tracker_extras %}
-{% block title %}My watchlist | RAM Price Tracker{% endblock %}
+
+{% block title %}My Watchlist | RAM Price Tracker{% endblock %}
+
 {% block content %}
-<div class="page-head">
+
+<section class="watchlist-heading">
   <div>
-    <h1>My watchlist</h1>
-    <p>{% if rows %}{{ reached_count }} of {{ rows|length }} kit{{ rows|length|pluralize }} {{ reached_count|pluralize:"has,have" }} reached your target price.{% else %}Save kits here and set the price you would pay.{% endif %}</p>
+    <span class="section-label">YOUR SAVED PRODUCTS</span>
+    <h1>My Watchlist</h1>
+
+    <p>
+      Keep track of RAM kits and see when their prices reach your target.
+    </p>
   </div>
-</div>
+
+  <a href="{% url 'tracker:product_list' %}" class="btn btn-primary">
+    Browse products
+  </a>
+</section>
 
 {% if rows %}
-<div class="panel p-0">
-  <div class="table-responsive">
-    <table class="table data-table table-hover mb-0">
+
+<section class="watchlist-summary">
+  <div class="watchlist-summary-item">
+    <span class="watchlist-summary-label">Saved products</span>
+    <strong>{{ rows|length }}</strong>
+  </div>
+
+  <div class="watchlist-summary-item">
+    <span class="watchlist-summary-label">Target prices reached</span>
+    <strong>{{ reached_count }}</strong>
+  </div>
+
+  <div class="watchlist-summary-item">
+    <span class="watchlist-summary-label">Still waiting</span>
+    <strong>{{ rows|length }}</strong>
+  </div>
+</section>
+
+<section class="watchlist-results">
+  <div class="watchlist-results-heading">
+    <div>
+      <h2>Your saved RAM kits</h2>
+      <p>Check current prices against your target prices.</p>
+    </div>
+  </div>
+
+  <div class="table-responsive watchlist-table-wrapper">
+    <table class="table watchlist-table mb-0">
       <thead>
-        <tr><th scope="col" class="ps-3">Kit</th><th scope="col" class="num">Best price</th><th scope="col" class="num">Your target</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
-      </thead>
-      <tbody>
-      {% for row in rows %}
         <tr>
-          <td class="ps-3"><a href="{{ row.product.get_absolute_url }}">{{ row.product.brand }} {{ row.product.model }}</a><div class="small-muted">{{ row.product.capacity_display }}, {{ row.product.ddr_generation }}-{{ row.product.speed_mhz }} at {{ row.product.best_retailer }}</div></td>
-          <td class="num num">{{ row.product.price|money }}</td>
-          <td class="num num">{{ row.item.target_price|money }}</td>
-          <td>
-            {% if row.gap <= 0 %}<span class="badge-reached">Target reached</span>{% else %}<span class="badge-wait">{{ row.gap|money }} above target</span>{% endif %}
-            {% include "tracker/_deal_badge.html" with deal=row.deal %}
-          </td>
-          <td class="text-end text-nowrap pe-3">
-            <a href="{% url 'tracker:watchlist_update' row.item.pk %}">Change target<span class="visually-hidden"> for {{ row.product }}</span></a>
-            <span class="text-body-tertiary px-1">|</span>
-            <a class="text-danger" href="{% url 'tracker:watchlist_delete' row.item.pk %}">Remove<span class="visually-hidden"> {{ row.product }}</span></a>
-          </td>
+          <th scope="col">RAM product</th>
+          <th scope="col">Best price</th>
+          <th scope="col">Your target</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="text-end">Actions</th>
         </tr>
-      {% endfor %}
+      </thead>
+
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>
+              <a class="watchlist-product-name" href="{{ row.product.get_absolute_url }}">
+                {{ row.product.brand }} {{ row.product.model }}
+              </a>
+
+              <span class="watchlist-product-specs">
+                {{ row.product.capacity_display }} ·
+                {{ row.product.ddr_generation }} ·
+                {{ row.product.speed_mhz }} MHz
+              </span>
+
+              <span class="watchlist-retailer">
+                Best price at {{ row.product.best_retailer }}
+              </span>
+            </td>
+
+            <td>
+              <strong class="watchlist-best-price">
+                {{ row.product.price|money }}
+              </strong>
+            </td>
+
+            <td>
+              <strong class="watchlist-target-price">
+                {{ row.item.target_price|money }}
+              </strong>
+            </td>
+
+            <td>
+              <div class="watchlist-status">
+                {% if row.gap <= 0 %}
+                  <span class="badge-reached">Target reached</span>
+                {% else %}
+                  <span class="badge-wait">
+                    {{ row.gap|money }} above target
+                  </span>
+                {% endif %}
+
+                {% include "tracker/_deal_badge.html" with deal=row.deal %}
+              </div>
+            </td>
+
+            <td class="text-end text-nowrap">
+              <div class="watchlist-actions">
+                <a href="{% url 'tracker:watchlist_update' row.item.pk %}">
+                  Change target
+                  <span class="visually-hidden"> for {{ row.product }}</span>
+                </a>
+
+                <a class="watchlist-remove-link" href="{% url 'tracker:watchlist_delete' row.item.pk %}">
+                  Remove
+                  <span class="visually-hidden"> {{ row.product }}</span>
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
-</div>
+</section>
+
 {% else %}
-<div class="panel text-center py-5">
-  <h2 class="h4">Your watchlist is empty</h2>
-  <p class="muted">Open any product and choose <strong>Add to watchlist</strong>, then enter the price you want to pay.</p>
-  <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Browse products</a>
-</div>
+
+<section class="panel watchlist-empty-state">
+  <div class="watchlist-empty-icon">♡</div>
+  <h2>Your watchlist is empty</h2>
+
+  <p>
+    Save RAM products you are interested in and set a target price.
+    You can come back here to check whether their prices have dropped.
+  </p>
+
+  <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">
+    Explore RAM products
+  </a>
+</section>
+
 {% endif %}
+
 {% endblock %}

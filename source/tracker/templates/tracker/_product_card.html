@@ -1,27 +1,59 @@
+
 {% load tracker_extras %}
+
 <div class="col">
-  <article class="product-card">
-    <div class="d-flex justify-content-between align-items-start gap-2">
-      <div>
-        <div class="brand">{{ product.brand }}</div>
-        <h2><a href="{{ product.get_absolute_url }}">{{ product.model }}</a></h2>
-        <div class="small-muted">{{ product.capacity_display }}</div>
+  <article class="product-card catalogue-product-card">
+
+    <div class="catalogue-card-top">
+      <div class="catalogue-product-info">
+        <span class="brand">{{ product.brand }}</span>
+        <h2>
+          <a href="{{ product.get_absolute_url }}">{{ product.model }}</a>
+        </h2>
+        <span class="catalogue-capacity">{{ product.capacity_display }}</span>
       </div>
-      <div class="form-check pt-1">
-        <input class="form-check-input" type="checkbox" name="ids" value="{{ product.pk }}" form="compare-form" id="cmp-{{ product.pk }}">
-        <label class="form-check-label" for="cmp-{{ product.pk }}">Compare<span class="visually-hidden"> {{ product }}</span></label>
-      </div>
+
+      <label class="compare-checkbox" for="cmp-{{ product.pk }}">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="ids"
+          value="{{ product.pk }}"
+          form="compare-form"
+          id="cmp-{{ product.pk }}"
+        >
+        <span>Compare</span>
+      </label>
     </div>
-    {% include "tracker/_spec_strip.html" %}
-    <div class="stretch">
-      <div class="d-flex align-items-baseline justify-content-between gap-2 flex-wrap">
+
+    <div class="catalogue-specifications">
+      {% include "tracker/_spec_strip.html" %}
+    </div>
+
+    <div class="catalogue-price-area">
+      <span class="catalogue-price-label">Current listed price</span>
+
+      <div class="catalogue-price-row">
         <span class="price price-lg">{{ product.price|money }}</span>
-        <span class="small-muted">at {{ product.best_retailer }}, {{ product.price_per_gb|money }} per GB</span>
+        <span class="catalogue-retailer">{{ product.best_retailer }}</span>
       </div>
-      <div class="d-flex flex-wrap gap-2 mt-2 align-items-center">
-        {% include "tracker/_deal_badge.html" with deal=product.deal %}
-        {% if product.is_watched %}<span class="badge-wait">On your watchlist</span>{% endif %}
+
+      <div class="catalogue-per-gb">
+        {{ product.price_per_gb|money }} per GB
       </div>
     </div>
+
+    <div class="catalogue-card-badges">
+      {% include "tracker/_deal_badge.html" with deal=product.deal %}
+
+      {% if product.is_watched %}
+        <span class="badge-wait">On your watchlist</span>
+      {% endif %}
+    </div>
+
+    <a class="catalogue-view-product" href="{{ product.get_absolute_url }}">
+      View product details →
+    </a>
+
   </article>
 </div>
