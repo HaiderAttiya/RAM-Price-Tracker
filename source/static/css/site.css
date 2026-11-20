@@ -363,6 +363,11 @@ select:focus-visible {
     text-align: right;
 }
 
+.data-table .price-cell {
+    white-space: nowrap;
+    min-width: 105px;
+}
+
 .compare-table {
     min-width: 560px;
 }
@@ -602,4 +607,450 @@ select:focus-visible {
     .btn {
         display: none !important;
     }
+}
+
+/* --------------------------------------------------
+   Updated website design
+-------------------------------------------------- */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --accent: #0d9488;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+}
+
+/* General appearance */
+body {
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+/* Navigation */
+.site-header {
+    background: #111827;
+    border-bottom: 1px solid #273449;
+}
+
+.site-header .navbar {
+    min-height: 72px;
+}
+
+.brand-mark {
+    gap: 0.7rem;
+    font-size: 1.2rem;
+    letter-spacing: -0.03em;
+}
+
+.brand-mark svg {
+    color: #ffffff;
+}
+
+.site-header .nav-link {
+    padding: 0.65rem 0.9rem !important;
+    border-radius: 7px;
+    transition: background 0.2s ease;
+}
+
+.site-header .nav-link:hover,
+.site-header .nav-link.active {
+    background: #263449;
+    color: #ffffff;
+    border-bottom: none;
+}
+
+.site-header .nav-link.active {
+    box-shadow: inset 0 -2px #60a5fa;
+}
+
+.site-header .navbar-toggler {
+    border-color: #64748b;
+}
+
+.site-header .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+}
+
+.btn-gold {
+    --bs-btn-bg: #2563eb;
+    --bs-btn-border-color: #2563eb;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-bg: #1d4ed8;
+    --bs-btn-hover-border-color: #1d4ed8;
+    --bs-btn-hover-color: #ffffff;
+}
+
+/* Main content */
+main.container {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+}
+
+/* Cards and panels */
+.panel,
+.product-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.035);
+}
+
+.panel {
+    padding: 1.4rem;
+}
+
+.product-card {
+    padding: 1.3rem;
+}
+
+.panel:hover {
+    border-color: #cbd5e1;
+}
+
+.product-card:hover {
+    border-color: #bfdbfe;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+}
+
+/* Prices */
+.price {
+    color: #0f172a;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+}
+
+.price-cell {
+    white-space: nowrap;
+}
+
+/* Deal labels */
+.badge-deal,
+.badge-great,
+.badge-reached,
+.badge-wait {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.78rem;
+    border-radius: 6px;
+}
+
+/* Tables */
+.data-table th {
+    color: #64748b;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.data-table td {
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
+}
+
+/* Forms */
+.form-control,
+.form-select {
+    border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Footer */
+.site-footer {
+    margin-top: 2rem;
+    padding: 1.4rem 0;
+    color: #94a3b8;
+    background: #111827;
+    border-top: none;
+    font-size: 0.85rem;
+}
+
+/* Mobile layout */
+@media (max-width: 991px) {
+    .site-header .navbar-collapse {
+        padding: 1rem 0;
+    }
+
+    .site-header .nav-link {
+        margin: 0.15rem 0;
+    }
+}
+
+@media (max-width: 576px) {
+    main.container {
+        padding-top: 1.25rem !important;
+    }
+
+    .panel {
+        padding: 1rem;
+    }
+}
+
+
+/* =========================================
+   Homepage improvements
+========================================= */
+
+/* Bootstrap primary colour */
+:root {
+    --bs-primary-rgb: 37, 99, 235;
+}
+
+/* Hero section */
+.hero-section {
+    margin-bottom: 2.5rem;
+}
+
+.hero-card {
+    height: 100%;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.2rem;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.hero-label,
+.section-label {
+    display: block;
+    margin-bottom: 0.65rem;
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+}
+
+.hero-card h1 {
+    max-width: 500px;
+    margin-bottom: 1rem;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 750;
+    line-height: 1.15;
+}
+
+.hero-description {
+    max-width: 480px;
+    margin-bottom: 1.3rem;
+    color: #64748b;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.hero-buttons {
+    margin-bottom: 2rem;
+}
+
+/* Deals panel */
+.deal-panel {
+    height: 100%;
+    padding: 1.5rem;
+}
+
+.deal-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.deal-heading h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.deal-heading a,
+.page-head > a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.deal-heading a:hover,
+.page-head > a:hover {
+    text-decoration: underline;
+}
+
+.deal-description {
+    margin-top: 0.65rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.deal-table {
+    min-width: 460px;
+}
+
+.deal-table th {
+    white-space: nowrap;
+}
+
+.deal-table td {
+    vertical-align: middle;
+}
+
+.deal-product-name {
+    color: #1e293b;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.deal-product-name:hover {
+    color: #2563eb;
+}
+
+.retailer-name {
+    margin-top: 0.2rem;
+    color: #2563eb;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.deal-badge-cell {
+    min-width: 115px;
+}
+
+.no-deals {
+    padding: 1.5rem 0;
+}
+
+/* Product section */
+.products-section {
+    margin-top: 1.5rem;
+}
+
+.products-section .page-head {
+    margin-bottom: 1.2rem;
+}
+
+.products-section .page-head h2 {
+    font-weight: 700;
+}
+
+.product-card {
+    height: 100%;
+    gap: 1rem;
+}
+
+.product-view-link {
+    display: inline-block;
+    margin-top: 0.4rem;
+    color: #2563eb;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.product-view-link:hover {
+    text-decoration: underline;
+}
+
+/* Smaller screens */
+@media (max-width: 991px) {
+    .hero-card {
+        min-height: auto;
+    }
+
+    .deal-panel {
+        height: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-card {
+        padding: 1.4rem;
+    }
+
+    .hero-card h1 {
+        font-size: 2rem;
+    }
+
+    .hero-description {
+        font-size: 0.95rem;
+    }
+
+    .hero-stats {
+        gap: 0.4rem;
+    }
+
+    .hero-stat strong {
+        font-size: 1.25rem;
+    }
+
+    .hero-stat span {
+        font-size: 0.72rem;
+    }
+
+    .deal-panel {
+        padding: 1rem;
+    }
+
+    .deal-heading h2 {
+        font-size: 1.2rem;
+    }
+
+    .demo-notice {
+        align-items: flex-start;
+        font-size: 0.8rem;
+    }
+}
+/* RAM generation section */
+.generation-section {
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid #dbeafe;
+}
+
+.generation-section h3 {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.generation-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.generation-options span {
+    padding: 0.5rem 1rem;
+    border: 1px solid #bfdbfe;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #2563eb;
+    font-size: 0.85rem;
+    font-weight: 700;
 }

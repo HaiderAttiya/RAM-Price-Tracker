@@ -13,21 +13,21 @@ catalogue and the same price *shape* (dates are relative to "now").
 
 import random
 from datetime import timedelta
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
 from tracker.models import RETAILER_NAMES, PriceRecord, Product, WatchlistItem
-from tracker.sample_data import CATALOGUE, PROMOTIONS, RETAILER_OFFSET, WATCHLIST
+from tracker.sample_data import CATALOGUE, PROMOTIONS, WATCHLIST
 
 HISTORY_DAYS = 120
 
 
 def to_price(value):
-    """Retail-style price: round to a whole number, then x.99 (e.g. 188.99)."""
-    return Decimal(max(round(value), 2)) - Decimal("0.01")
+    """Round a sample price to three decimal places."""
+    return Decimal(str(value)).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
 
 
 class Command(BaseCommand):
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             Product(
                 brand=brand, model=model, ddr_generation=gen, capacity_gb=cap, modules=mods,
                 speed_mhz=speed, cas_latency=cl, voltage=Decimal(volts),
-                price=Decimal(price), best_retailer="Amazon",  # placeholders, recalculated from history below
+                price=to_price(Decimal(price) * Decimal("0.376")), best_retailer="Amazon",
             )
             for brand, model, gen, cap, mods, speed, cl, volts, price in CATALOGUE
         ]
@@ -97,17 +97,28 @@ class Command(BaseCommand):
         promo_by_index = {key_to_index[(b, m, cap, sp)]: disc for b, m, cap, sp, disc in PROMOTIONS}
         records = []
         for index, product in enumerate(products):
-            typical = float(CATALOGUE[index][8])
+            typical = float(CATALOGUE[index][8]) * 0.376
             trend = self.market_trend(rng)
-            retailers = ["Amazon"] + rng.sample([r for r in RETAILER_NAMES if r != "Amazon"], rng.randint(2, 4))
+            other_retailers = [r for r in RETAILER_NAMES if r != "Amazon"]
+            retailers = ["Amazon"] + rng.sample(
+                other_retailers,
+                rng.randint(2, len(other_retailers))
+            )
+
+            # Give each retailer a different price level for this RAM kit.
+            # This allows different retailers to have the lowest price.
+            retailer_prices = {
+                retailer: rng.uniform(0.94, 1.06)
+                for retailer in retailers
+            }
 
             promo_retailer = None
             if index in promo_by_index:
-                # The cheapest-priced retailer for this kit runs the promotion.
-                promo_retailer = min(retailers, key=lambda r: RETAILER_OFFSET[r])
+                # Choose a random retailer to receive the promotion.
+                promo_retailer = rng.choice(retailers)
 
             for retailer in retailers:
-                offset = RETAILER_OFFSET[retailer] * rng.uniform(0.985, 1.015)
+                offset = retailer_prices[retailer]
                 # Walk backwards from "a day or two ago" in 3-8 day steps.
                 age_days = rng.uniform(0.1, 2.0)
                 ages = []
@@ -116,7 +127,7 @@ class Command(BaseCommand):
                     age_days += rng.uniform(3, 8)
                 for position, age in enumerate(ages):
                     day_index = HISTORY_DAYS - int(age)
-                    price = typical * trend[day_index] * offset * rng.uniform(0.988, 1.012)
+                    price = typical * trend[day_index] * offset * rng.uniform(0.995, 1.005)
                     if retailer == promo_retailer and position == 0:  # the newest record is the price drop
                         price *= 1 - promo_by_index[index]
                     records.append(PriceRecord(
@@ -150,7 +161,9 @@ class Command(BaseCommand):
         for brand, model, capacity, speed, factor in WATCHLIST:
             product = key_to_product[(brand, model, capacity, speed)]
             product.refresh_from_db()
-            target = (product.price * Decimal(str(factor))).quantize(Decimal("1")) - Decimal("0.01")
+            target = (product.price * Decimal(str(factor))).quantize(
+    Decimal("0.001"), rounding=ROUND_HALF_UP
+)
             WatchlistItem.objects.create(user=user, product=product, target_price=target)
             count += 1
         return count

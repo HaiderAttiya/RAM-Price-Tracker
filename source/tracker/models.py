@@ -48,10 +48,9 @@ MODULE_CHOICES = [(1, "1 stick"), (2, "2 sticks (kit)"), (4, "4 sticks (kit)")]
 
 RETAILER_CHOICES = [
     ("Amazon", "Amazon"),
-    ("Newegg", "Newegg"),
-    ("Best Buy", "Best Buy"),
-    ("Micro Center", "Micro Center"),
-    ("B&H Photo", "B&H Photo"),
+    ("Computia", "Computia"),
+    ("Cazasouq", "Cazasouq"),
+    ("Advanti", "Advanti"),
 ]
 RETAILER_NAMES = [value for value, _label in RETAILER_CHOICES]
 
@@ -64,8 +63,8 @@ VOLTAGE_RANGE = {
     "DDR5": (Decimal("1.00"), Decimal("1.50")),
 }
 
-PRICE_MIN = Decimal("0.01")
-PRICE_MAX = Decimal("99999.99")
+PRICE_MIN = Decimal("0.001")
+PRICE_MAX = Decimal("99999.999")
 
 
 class Product(models.Model):
@@ -91,7 +90,7 @@ class Product(models.Model):
     price = models.DecimalField(
         "best current price",
         max_digits=8,
-        decimal_places=2,
+        decimal_places=3,
         validators=[MinValueValidator(PRICE_MIN)],
     )
     best_retailer = models.CharField("best price at", max_length=30, choices=RETAILER_CHOICES)
@@ -183,7 +182,7 @@ class Product(models.Model):
     def price_per_gb(self):
         if not self.capacity_gb or self.price is None:
             return None
-        return (self.price / Decimal(self.capacity_gb)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        return (self.price / Decimal(self.capacity_gb)).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
 
     # --- price synchronisation -------------------------------------------------
     def latest_prices_by_retailer(self):
@@ -223,7 +222,7 @@ class PriceRecord(models.Model):
     # db_index=False: the compound index below already starts with "product".
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="price_records", db_index=False)
     retailer = models.CharField(max_length=30, choices=RETAILER_CHOICES)
-    price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(PRICE_MIN)])
+    price = models.DecimalField(max_digits=8, decimal_places=3, validators=[MinValueValidator(PRICE_MIN)])
     recorded_at = models.DateTimeField("recorded at", default=timezone.now)
     retailer_url = models.URLField("link to the offer", blank=True, max_length=500)
 
@@ -269,7 +268,7 @@ class WatchlistItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="watchers")
     target_price = models.DecimalField(
         max_digits=8,
-        decimal_places=2,
+        decimal_places=3,
         validators=[MinValueValidator(PRICE_MIN)],
         help_text="You will be flagged when the best price drops to this level or lower.",
     )

@@ -135,7 +135,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # --------------------------------------------------------------------------
 # Application-specific settings (used by tracker/)
 # --------------------------------------------------------------------------
-CURRENCY_SYMBOL = "$"  # display only; prices are plain decimals
+CURRENCY_SYMBOL = "BHD "  # display only; prices are plain decimals
 PRODUCTS_PER_PAGE = 12
 
 # "Potential deal" calculation (documented in README and tracker/services.py):

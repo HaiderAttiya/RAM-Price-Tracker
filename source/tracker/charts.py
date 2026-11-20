@@ -24,7 +24,7 @@ from django.utils.safestring import mark_safe
 from .models import RETAILER_NAMES
 
 # Fixed order == fixed identity (see module docstring).
-RETAILER_COLORS = dict(zip(RETAILER_NAMES, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]))
+RETAILER_COLORS = dict(zip(RETAILER_NAMES, ["#2a78d6", "#1baf7a", "#eda100", "#eb6834"]))
 
 WIDTH, HEIGHT = 760, 300
 PAD_L, PAD_R, PAD_T, PAD_B = 58, 22, 14, 30
@@ -99,7 +99,7 @@ def build_price_chart(records):
         parts.append(
             f'<line x1="{x0}" x2="{x1}" y1="{y:.1f}" y2="{y:.1f}" stroke="{AXIS if is_base else GRID}" stroke-width="1"/>'
         )
-        label = f"{symbol}{tick:,.0f}" if float(tick).is_integer() else f"{symbol}{tick:,.2f}"
+        label = f"{symbol}{tick:,.3f}"
         parts.append(
             f'<text x="{x0 - 8}" y="{y + 4:.1f}" text-anchor="end" font-size="13" fill="{INK_MUTED}">{escape(label)}</text>'
         )

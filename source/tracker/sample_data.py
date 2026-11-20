@@ -64,17 +64,9 @@ CATALOGUE = [
     ("Crucial", "Value", "DDR3", 8, 1, 1600, 11, "1.35", 28),
 ]
 
-# Retailer price level relative to the typical price.
-RETAILER_OFFSET = {
-    "Amazon": 1.00,
-    "Newegg": 0.99,
-    "Best Buy": 1.06,
-    "Micro Center": 0.97,
-    "B&H Photo": 1.03,
-}
 
-# Kits given a fresh price drop so the demo has deals to show:
-# (brand, model, capacity_gb, speed_mhz, discount).  >= 20% is a "great deal".
+
+
 PROMOTIONS = [
     ("G.Skill", "Trident Z5 RGB", 32, 6000, 0.24),
     ("Kingston", "Fury Beast", 32, 6000, 0.16),

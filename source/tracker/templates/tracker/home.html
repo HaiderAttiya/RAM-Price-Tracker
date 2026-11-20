@@ -1,80 +1,187 @@
+
 {% extends "base.html" %}
 {% load tracker_extras %}
+
 {% block title %}RAM Price Tracker{% endblock %}
 
 {% block content %}
-<section class="hero row g-4 align-items-start">
-  <div class="col-lg-6">
-    <h1>Know when RAM is actually worth buying.</h1>
-    <p class="lead mt-3">Compare DDR3, DDR4 and DDR5 kits, follow each retailer's price history, and get flagged when a price falls below your target.</p>
-    <div class="d-flex flex-wrap gap-2 mt-3">
-      <a class="btn btn-primary btn-lg" href="{% url 'tracker:product_list' %}">Browse RAM</a>
-      <a class="btn btn-outline-primary btn-lg" href="{% url 'tracker:deals' %}">See current deals</a>
-    </div>
-    <ul class="stat-row">
-      <li><strong>{{ product_count }}</strong> kits tracked</li>
-      <li><strong>{{ record_count }}</strong> price records</li>
-      <li><strong>{{ deal_count }}</strong> deal{{ deal_count|pluralize }} right now</li>
-    </ul>
-  </div>
 
-  <div class="col-lg-6">
-    <div class="panel">
-      <div class="d-flex justify-content-between align-items-baseline">
-        <h2 class="mb-0">Biggest price drops</h2>
-        <a href="{% url 'tracker:deals' %}">All deals</a>
-      </div>
-      <p class="small-muted mt-1 mb-2">Best price is at least {{ DEAL_THRESHOLD_PERCENT }}% below that retailer's {{ DEAL_WINDOW_DAYS }}-day average.</p>
-      {% if deals %}
-      <div class="table-responsive">
-        <table class="table data-table mb-0">
-          <thead><tr><th scope="col">Kit</th><th scope="col" class="num">Price</th><th scope="col" class="num">Below usual</th></tr></thead>
-          <tbody>
-          {% for product, deal in deals %}
-            <tr>
-              <td><a href="{{ product.get_absolute_url }}">{{ product.brand }} {{ product.model }}</a><div class="small-muted">{{ product.capacity_display }}, {{ product.ddr_generation }}-{{ product.speed_mhz }} at {{ product.best_retailer }}</div></td>
-              <td class="num num">{{ product.price|money }}</td>
-              <td class="num">{% include "tracker/_deal_badge.html" %}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-        <p class="mb-0">No kit is {{ DEAL_THRESHOLD_PERCENT }}% below its usual price today. Check back after the next price update.</p>
-      {% endif %}
+
+
+<section class="hero-section row g-4 align-items-stretch">
+
+    <!-- Welcome section -->
+    <div class="col-lg-6">
+        <div class="hero-card">
+            <span class="hero-label">RAM PRICE TRACKER</span>
+
+            <h1>Find the right RAM at the right price.</h1>
+
+            <p class="hero-description">
+                Compare DDR3, DDR4 and DDR5 memory, check prices from different
+                retailers, and keep track of the RAM kits you want.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 hero-buttons">
+                <a class="btn btn-primary btn-lg"
+                   href="{% url 'tracker:product_list' %}">
+                    Browse RAM
+                </a>
+
+                <a class="btn btn-outline-primary btn-lg"
+                   href="{% url 'tracker:deals' %}">
+                    View deals
+                </a>
+            </div>
+            <div class="generation-section">
+    <h3>Explore RAM generations</h3>
+
+    <div class="generation-options">
+        <span>DDR3</span>
+        <span>DDR4</span>
+        <span>DDR5</span>
     </div>
-  </div>
+</div>
+        </div>
+    </div>
+
+    <!-- Deals section -->
+    <div class="col-lg-6">
+        <div class="panel deal-panel">
+            <div class="deal-heading">
+                <div>
+                    <span class="section-label">PRICE CHECK</span>
+                    <h2>Biggest price drops</h2>
+                </div>
+
+                <a href="{% url 'tracker:deals' %}">View all</a>
+            </div>
+
+            <p class="small-muted deal-description">
+                RAM kits with prices below their usual retailer average.
+            </p>
+
+            {% if deals %}
+            <div class="table-responsive">
+                <table class="table data-table deal-table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">RAM kit</th>
+                            <th scope="col" class="num">Price</th>
+                            <th scope="col">Deal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for product, deal in deals %}
+                        <tr>
+                            <td>
+                                <a class="deal-product-name"
+                                   href="{{ product.get_absolute_url }}">
+                                    {{ product.brand }} {{ product.model }}
+                                </a>
+
+                                <div class="small-muted">
+                                    {{ product.capacity_display }},
+                                    {{ product.ddr_generation }}
+                                    {{ product.speed_mhz }} MHz
+                                </div>
+
+                                <div class="retailer-name">
+                                    {{ product.best_retailer }}
+                                </div>
+                            </td>
+
+                            <td class="num price-cell">
+                                {{ product.price|money }}
+                            </td>
+
+                            <td class="deal-badge-cell">
+                                {% include "tracker/_deal_badge.html" %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+                <div class="no-deals">
+                    <p class="mb-1">No major price drops right now.</p>
+                    <span class="small-muted">
+                        Check again later for new deals.
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </section>
 
-<section class="mt-4">
-  <div class="page-head">
-    <div><h2 class="h3 mb-0">Recently updated</h2></div>
-    <a href="{% url 'tracker:product_list' %}">All products</a>
-  </div>
-  {% if recent_products %}
-  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-    {% for product in recent_products %}
-    <div class="col">
-      <article class="product-card">
+<!-- RAM products -->
+<section class="products-section">
+    <div class="page-head">
         <div>
-          <div class="brand">{{ product.brand }}</div>
-          <h3 class="h5 mb-0"><a class="text-decoration-none" href="{{ product.get_absolute_url }}">{{ product.model }}</a></h3>
+            <span class="section-label">EXPLORE THE CATALOGUE</span>
+            <h2 class="h3 mb-0">RAM kits to explore</h2>
         </div>
-        {% include "tracker/_spec_strip.html" %}
-        <div class="stretch d-flex justify-content-between align-items-baseline">
-          <span class="price price-lg">{{ product.price|money }}</span>
-          <span class="small-muted">at {{ product.best_retailer }}</span>
-        </div>
-      </article>
+
+        <a href="{% url 'tracker:product_list' %}">View all products</a>
     </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="panel">
-    <p class="mb-2">The catalogue is empty.</p>
-    {% if user.is_authenticated %}<a class="btn btn-primary" href="{% url 'tracker:product_create' %}">Add the first product</a>{% else %}<a href="{% url 'login' %}">Log in</a> to add products, or run <code>python manage.py seed_data</code> to load the sample data.{% endif %}
-  </div>
-  {% endif %}
+
+    {% if recent_products %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        {% for product in recent_products %}
+        <div class="col">
+            <article class="product-card">
+                <div>
+                    <div class="brand">{{ product.brand }}</div>
+
+                    <h3 class="h5 mb-0">
+                        <a class="text-decoration-none"
+                           href="{{ product.get_absolute_url }}">
+                            {{ product.model }}
+                        </a>
+                    </h3>
+                </div>
+
+                {% include "tracker/_spec_strip.html" %}
+
+                <div class="stretch d-flex justify-content-between align-items-baseline gap-2">
+                    <span class="price price-lg">
+                        {{ product.price|money }}
+                    </span>
+
+                    <span class="small-muted">
+                        {{ product.best_retailer }}
+                    </span>
+                </div>
+
+                <a class="product-view-link"
+                   href="{{ product.get_absolute_url }}">
+                    View product →
+                </a>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="panel">
+        <p class="mb-2">There are no RAM products yet.</p>
+
+        {% if user.is_authenticated %}
+            <a class="btn btn-primary"
+               href="{% url 'tracker:product_create' %}">
+                Add a product
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}">Log in</a>
+            to add products, or run
+            <code>python manage.py seed_data</code>
+            to load the sample data.
+        {% endif %}
+    </div>
+    {% endif %}
 </section>
+
 {% endblock %}

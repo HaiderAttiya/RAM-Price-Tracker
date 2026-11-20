@@ -54,7 +54,7 @@ class DealInfo:
 
 
 def _money(value):
-    return Decimal(value).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return Decimal(value).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
 
 
 def classify(current_price, baseline, record_count, window_low=None):

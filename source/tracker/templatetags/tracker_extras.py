@@ -10,11 +10,11 @@ register = template.Library()
 
 @register.filter
 def money(value):
-    """Decimal -> '$1,234.50' (currency symbol comes from settings.CURRENCY_SYMBOL)."""
+    """Format a price in Bahraini dinars."""
     if value is None or value == "":
         return "-"
     try:
-        return f"{settings.CURRENCY_SYMBOL}{Decimal(value):,.2f}"
+        return f"{settings.CURRENCY_SYMBOL}{Decimal(value):,.3f}"
     except (InvalidOperation, TypeError, ValueError):
         return str(value)
 
