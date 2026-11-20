@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load tracker_extras %}
 
@@ -15,7 +14,7 @@
 
   <div class="catalogue-heading-right">
     <span class="catalogue-count">{{ total }} product{{ total|pluralize }}</span>
-    {% if user.is_authenticated %}
+    {% if user.is_staff %}
       <a class="btn btn-primary" href="{% url 'tracker:product_create' %}">Add product</a>
     {% endif %}
   </div>
@@ -32,40 +31,41 @@
   <form method="get" aria-label="Search and filter products">
     {% include "tracker/_form_errors.html" with form=filter_form %}
 
-    <div class="row g-3 align-items-end">
-      <div class="col-12 col-lg-4">
-        {% include "tracker/_field.html" with field=filter_form.q %}
-      </div>
+<div class="row g-3 align-items-end">
+  <div class="col-12 col-lg-4">
+    {% include "tracker/_field.html" with field=filter_form.q %}
+  </div>
 
-      <div class="col-6 col-lg-2">
-        {% include "tracker/_field.html" with field=filter_form.brand %}
-      </div>
+  <div class="col-6 col-lg-2">
+    {% include "tracker/_field.html" with field=filter_form.brand %}
+  </div>
 
-      <div class="col-6 col-lg-2">
-        {% include "tracker/_field.html" with field=filter_form.ddr_generation %}
-      </div>
+  <div class="col-6 col-lg-2">
+    {% include "tracker/_field.html" with field=filter_form.ddr_generation %}
+  </div>
 
-      <div class="col-6 col-lg-2">
-        {% include "tracker/_field.html" with field=filter_form.capacity_gb %}
-      </div>
+  <div class="col-6 col-lg-2">
+    {% include "tracker/_field.html" with field=filter_form.capacity_gb %}
+  </div>
 
-      <div class="col-6 col-lg-2">
-        {% include "tracker/_field.html" with field=filter_form.sort %}
-      </div>
+  <div class="col-6 col-lg-2">
+    {% include "tracker/_field.html" with field=filter_form.sort %}
+  </div>
 
-      <div class="col-6 col-lg-3">
-        {% include "tracker/_field.html" with field=filter_form.min_price %}
-      </div>
+  <div class="col-6 col-lg-3">
+    {% include "tracker/_field.html" with field=filter_form.min_price %}
+  </div>
 
-      <div class="col-6 col-lg-3">
-        {% include "tracker/_field.html" with field=filter_form.max_price %}
-      </div>
+  <div class="col-6 col-lg-3">
+    {% include "tracker/_field.html" with field=filter_form.max_price %}
+  </div>
 
-      <div class="col-12 col-lg-6 filter-actions">
-        <button type="submit" class="btn btn-primary">Apply filters</button>
-        <a class="btn btn-outline-secondary" href="{% url 'tracker:product_list' %}">Reset filters</a>
-      </div>
-    </div>
+  <div class="col-12 col-lg-6 filter-actions">
+    <button type="submit" class="btn btn-primary">Apply filters</button>
+    <a class="btn btn-outline-secondary" href="{% url 'tracker:product_list' %}">Reset filters</a>
+  </div>
+</div>
+
   </form>
 </section>
 
@@ -85,27 +85,29 @@
 
   <form method="get" action="{% url 'tracker:compare' %}" id="compare-form" data-max="{{ max_compare }}"></form>
 
-  {% if products %}
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-      {% for product in products %}
-        {% include "tracker/_product_card.html" %}
-      {% endfor %}
-    </div>
+{% if products %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+{% for product in products %}
+{% include "tracker/_product_card.html" %}
+{% endfor %}
+</div>
 
-    <div class="mt-4">
-      {% include "tracker/_pagination.html" with param="page" qs=querystring %}
-    </div>
+<div class="mt-4">
+  {% include "tracker/_pagination.html" with param="page" qs=querystring %}
+</div>
 
-  {% else %}
-    <div class="panel empty-catalogue">
-      <h2>No products found</h2>
-      <p>Try changing your search or adjusting the filters.</p>
-      <a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Clear filters</a>
-    </div>
-  {% endif %}
+{% else %}
+<div class="panel empty-catalogue">
+<h2>No products found</h2>
+<p>Try changing your search or adjusting the filters.</p>
+<a class="btn btn-primary" href="{% url 'tracker:product_list' %}">Clear filters</a>
+</div>
+{% endif %}
+
 </section>
 
 {% if products %}
+
   <div class="compare-bar mt-4">
     <div class="container py-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
       <span data-compare-count aria-live="polite">
@@ -122,5 +124,7 @@
 
 {% block extra_js %}
 {% load static %}
+
 <script src="{% static 'js/site.js' %}"></script>
+
 {% endblock %}

@@ -15,7 +15,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404
@@ -173,7 +173,12 @@ class ProductDetailView(DetailView):
 # ---------------------------------------------------------------------------
 # Products: create / edit / delete
 # ---------------------------------------------------------------------------
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Only administrators can access management pages."""
+
+    def test_func(self):
+        return self.request.user.is_staff
+class ProductCreateView(AdminRequiredMixin, CreateView):
     model = Product
     form_class = ProductCreateForm
     template_name = "tracker/product_form.html"
@@ -196,7 +201,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return ctx
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(AdminRequiredMixin, UpdateView):
     model = Product
     form_class = ProductEditForm
     template_name = "tracker/product_form.html"
@@ -211,7 +216,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return ctx
 
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+class ProductDeleteView(AdminRequiredMixin, DeleteView):
     model = Product
     template_name = "tracker/product_confirm_delete.html"
     success_url = reverse_lazy("tracker:product_list")
@@ -231,7 +236,7 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
 # ---------------------------------------------------------------------------
 # Price records
 # ---------------------------------------------------------------------------
-class PriceRecordCreateView(LoginRequiredMixin, CreateView):
+class PriceRecordCreateView(AdminRequiredMixin, CreateView):
     model = PriceRecord
     form_class = PriceRecordForm
     template_name = "tracker/pricerecord_form.html"
@@ -258,7 +263,7 @@ class PriceRecordCreateView(LoginRequiredMixin, CreateView):
         return ctx
 
 
-class PriceRecordUpdateView(LoginRequiredMixin, UpdateView):
+class PriceRecordUpdateView(AdminRequiredMixin, UpdateView):
     model = PriceRecord
     form_class = PriceRecordForm
     template_name = "tracker/pricerecord_form.html"
@@ -276,7 +281,7 @@ class PriceRecordUpdateView(LoginRequiredMixin, UpdateView):
         return ctx
 
 
-class PriceRecordDeleteView(LoginRequiredMixin, DeleteView):
+class PriceRecordDeleteView(AdminRequiredMixin, DeleteView):
     model = PriceRecord
     template_name = "tracker/pricerecord_confirm_delete.html"
 

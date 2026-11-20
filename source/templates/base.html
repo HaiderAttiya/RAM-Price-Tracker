@@ -63,10 +63,15 @@
 
           <ul class="navbar-nav align-items-lg-center gap-lg-2">
             {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="btn btn-gold btn-sm"
-                 href="{% url 'tracker:product_create' %}">Add product</a>
-            </li>
+
+{% if user.is_staff %}
+<li class="nav-item">
+  <a class="btn btn-gold btn-sm"
+     href="{% url 'tracker:product_create' %}">Add product</a>
+</li>
+{% endif %}
+
+<li class="nav-item dropdown">
 
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button"
