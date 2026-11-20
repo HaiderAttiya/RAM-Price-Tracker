@@ -169,7 +169,7 @@
     <div class="panel">
         <p class="mb-2">There are no RAM products yet.</p>
 
-        {% if user.is_authenticated %}
+        {% if user.is_staff %}
             <a class="btn btn-primary"
                href="{% url 'tracker:product_create' %}">
                 Add a product

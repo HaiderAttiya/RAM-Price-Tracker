@@ -18,12 +18,12 @@ class ChartTests(TestCase):
 
     def test_one_line_per_retailer_with_fixed_colours(self):
         product = make_product()
-        add_record(product, "150.00", retailer="Newegg", days_ago=9)
-        add_record(product, "155.00", retailer="Newegg", days_ago=2)
-        add_record(product, "160.00", retailer="Best Buy", days_ago=5)
+        add_record(product, "150.00", retailer="Computia", days_ago=9)
+        add_record(product, "155.00", retailer="Computia", days_ago=2)
+        add_record(product, "160.00", retailer="Advanti", days_ago=5)
         chart = build_price_chart(product.price_records.all())
         names = [s["name"] for s in chart["data"]["series"]]
-        self.assertEqual(names, ["Newegg", "Best Buy"])  # fixed retailer order, not data order
+        self.assertEqual(names, ["Computia", "Advanti"])  # fixed retailer order, not data order
         for series in chart["data"]["series"]:
             self.assertEqual(series["color"], RETAILER_COLORS[series["name"]])
         self.assertEqual(chart["svg"].count("<path"), 2)

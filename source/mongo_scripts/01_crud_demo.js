@@ -57,13 +57,13 @@ print("insertOne -> _id " + kit.insertedId);
 // 1b. insertMany
 const many = demo.products.insertMany([
   { brand: "G.Skill", model: "Trident Z5 RGB", ddr_generation: "DDR5", capacity_gb: NumberInt(32), modules: NumberInt(2),
-    speed_mhz: NumberInt(6000), cas_latency: NumberInt(30), voltage: NumberDecimal("1.40"), price: NumberDecimal("199.99"), best_retailer: "Newegg" },
+    speed_mhz: NumberInt(6000), cas_latency: NumberInt(30), voltage: NumberDecimal("1.40"), price: NumberDecimal("199.99"), best_retailer: "Computia" },
   { brand: "Kingston", model: "Fury Beast", ddr_generation: "DDR4", capacity_gb: NumberInt(16), modules: NumberInt(2),
     speed_mhz: NumberInt(3200), cas_latency: NumberInt(16), voltage: NumberDecimal("1.35"), price: NumberDecimal("59.99"), best_retailer: "Amazon" },
   { brand: "Crucial", model: "Pro", ddr_generation: "DDR5", capacity_gb: NumberInt(64), modules: NumberInt(2),
-    speed_mhz: NumberInt(5600), cas_latency: NumberInt(46), voltage: NumberDecimal("1.10"), price: NumberDecimal("289.99"), best_retailer: "Micro Center" },
+    speed_mhz: NumberInt(5600), cas_latency: NumberInt(46), voltage: NumberDecimal("1.10"), price: NumberDecimal("289.99"), best_retailer: "Cazasouq" },
   { brand: "Corsair", model: "Vengeance LPX", ddr_generation: "DDR4", capacity_gb: NumberInt(32), modules: NumberInt(2),
-    speed_mhz: NumberInt(3200), cas_latency: NumberInt(16), voltage: NumberDecimal("1.35"), price: NumberDecimal("114.99"), best_retailer: "Best Buy" }
+    speed_mhz: NumberInt(3200), cas_latency: NumberInt(16), voltage: NumberDecimal("1.35"), price: NumberDecimal("114.99"), best_retailer: "Advanti" }
 ]);
 print("insertMany -> " + Object.keys(many.insertedIds).length + " documents");
 
@@ -75,8 +75,8 @@ demo.price_records.insertMany([
   { product_id: productId, retailer: "Amazon",  price: NumberDecimal("199.99"), recorded_at: daysAgo(30), retailer_url: "" },
   { product_id: productId, retailer: "Amazon",  price: NumberDecimal("194.99"), recorded_at: daysAgo(15), retailer_url: "" },
   { product_id: productId, retailer: "Amazon",  price: NumberDecimal("189.99"), recorded_at: daysAgo(1),  retailer_url: "" },
-  { product_id: productId, retailer: "Newegg",  price: NumberDecimal("197.99"), recorded_at: daysAgo(20), retailer_url: "" },
-  { product_id: productId, retailer: "Newegg",  price: NumberDecimal("192.99"), recorded_at: daysAgo(2),  retailer_url: "" }
+  { product_id: productId, retailer: "Computia",  price: NumberDecimal("197.99"), recorded_at: daysAgo(20), retailer_url: "" },
+  { product_id: productId, retailer: "Computia",  price: NumberDecimal("192.99"), recorded_at: daysAgo(2),  retailer_url: "" }
 ]);
 demo.watchlist.insertOne({ user_id: ObjectId(), product_id: productId, target_price: NumberDecimal("175.00"), created_at: new Date() });
 print("price_records: " + demo.price_records.countDocuments() + ", watchlist: " + demo.watchlist.countDocuments());
@@ -122,7 +122,7 @@ printjson(demo.price_records.aggregate([
 heading("3. UPDATE");
 // ---------------------------------------------------------------------------
 print("-- 3a. update ONE document ($set)");
-let r = demo.products.updateOne({ brand: "Kingston", model: "Fury Beast" }, { $set: { price: NumberDecimal("54.99"), best_retailer: "Newegg" } });
+let r = demo.products.updateOne({ brand: "Kingston", model: "Fury Beast" }, { $set: { price: NumberDecimal("54.99"), best_retailer: "Computia" } });
 print("matched " + r.matchedCount + ", modified " + r.modifiedCount);
 
 print("-- 3b. update MANY documents (10% off every DDR4 kit, rounded to 2 decimals, using an update pipeline)");

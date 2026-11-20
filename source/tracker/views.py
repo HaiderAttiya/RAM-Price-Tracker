@@ -371,6 +371,7 @@ class WatchlistView(LoginRequiredMixin, TemplateView):
         rows.sort(key=lambda r: (r["gap"] > 0, r["gap"]))
         ctx["rows"] = rows
         ctx["reached_count"] = sum(1 for r in rows if r["gap"] <= 0)
+        ctx["waiting_count"] = len(rows) - ctx["reached_count"]
         return ctx
 
 

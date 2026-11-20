@@ -91,7 +91,7 @@ class ProductCreateForm(ProductEditForm):
         labels = {"price": "Starting price", "best_retailer": "Seen at (retailer)"}
         widgets = {
             **ProductEditForm.Meta.widgets,
-            "price": forms.NumberInput(attrs={"step": "0.01", "min": str(PRICE_MIN), "max": str(PRICE_MAX)}),
+            "price": forms.NumberInput(attrs={"step": "0.001", "min": str(PRICE_MIN), "max": str(PRICE_MAX)}),
         }
         help_texts = {
             "price": "This becomes the first entry in the price history.",
@@ -113,7 +113,7 @@ class PriceRecordForm(BootstrapFormMixin, forms.ModelForm):
         model = PriceRecord
         fields = ["retailer", "price", "recorded_at", "retailer_url"]
         widgets = {
-            "price": forms.NumberInput(attrs={"step": "0.01", "min": str(PRICE_MIN), "max": str(PRICE_MAX)}),
+            "price": forms.NumberInput(attrs={"step": "0.001", "min": str(PRICE_MIN), "max": str(PRICE_MAX)}),
             "retailer_url": forms.URLInput(attrs={"placeholder": "https://… (optional)"}),
         }
 
@@ -136,7 +136,7 @@ class WatchlistForm(BootstrapFormMixin, forms.ModelForm):
         fields = ["target_price"]
         labels = {"target_price": "Target price"}
         widgets = {
-            "target_price": forms.NumberInput(attrs={"step": "0.01", "min": str(PRICE_MIN), "max": str(PRICE_MAX)}),
+            "target_price": forms.NumberInput(attrs={"step": "0.001", "min": str(PRICE_MIN), "max": str(PRICE_MAX)}),
         }
 
 

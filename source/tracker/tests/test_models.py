@@ -83,21 +83,21 @@ class PriceSynchronisationTests(TestCase):
         return self.product
 
     def test_first_record_sets_price_and_retailer(self):
-        add_record(self.product, "180.00", retailer="Newegg")
+        add_record(self.product, "180.00", retailer="Computia")
         p = self.reload()
-        self.assertEqual((p.price, p.best_retailer), (Decimal("180.00"), "Newegg"))
+        self.assertEqual((p.price, p.best_retailer), (Decimal("180.00"), "Computia"))
         self.assertIsNotNone(p.price_updated_at)
 
     def test_cheapest_retailer_wins(self):
         add_record(self.product, "200.00", retailer="Amazon", days_ago=2)
-        add_record(self.product, "185.00", retailer="Micro Center", days_ago=1)
+        add_record(self.product, "185.00", retailer="Cazasouq", days_ago=1)
         p = self.reload()
-        self.assertEqual((p.price, p.best_retailer), (Decimal("185.00"), "Micro Center"))
+        self.assertEqual((p.price, p.best_retailer), (Decimal("185.00"), "Cazasouq"))
 
     def test_only_each_retailers_latest_record_counts(self):
         add_record(self.product, "100.00", retailer="Amazon", days_ago=10)   # old low price
         add_record(self.product, "190.00", retailer="Amazon", days_ago=1)    # newer, higher
-        add_record(self.product, "195.00", retailer="Newegg", days_ago=1)
+        add_record(self.product, "195.00", retailer="Computia", days_ago=1)
         p = self.reload()
         self.assertEqual((p.price, p.best_retailer), (Decimal("190.00"), "Amazon"))
 

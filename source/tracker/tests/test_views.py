@@ -17,7 +17,7 @@ def url(name, *args, **kwargs):
 
 VALID_PRODUCT = {
     "brand": "kingston", "model": "Fury Beast", "ddr_generation": "DDR5", "capacity_gb": "32", "modules": "2",
-    "speed_mhz": "6000", "cas_latency": "36", "voltage": "1.35", "price": "159.99", "best_retailer": "Newegg",
+    "speed_mhz": "6000", "cas_latency": "36", "voltage": "1.35", "price": "159.99", "best_retailer": "Computia",
 }
 
 
@@ -98,7 +98,7 @@ class SearchAndFilterTests(TestCase):
     def test_no_match_shows_empty_state(self):
         found, response = self.names(q="nonexistent-brand")
         self.assertEqual(found, set())
-        self.assertContains(response, "No products match these filters")
+        self.assertContains(response, "No products found")
 
     def test_sort_price_ascending_and_descending(self):
         _, response = self.names(sort="price_asc")
@@ -166,7 +166,7 @@ class ProductDetailTests(TestCase):
         product = product_with_history([(100, 1)])
         response = self.client.get(url("product_detail", product.pk))
         self.assertNotContains(response, "Delete</a>")
-        self.assertContains(response, "Log in to track this kit")
+        self.assertContains(response, "Log in to save this product")
 
 
 class AccessControlTests(TestCase):
@@ -195,14 +195,14 @@ class AccessControlTests(TestCase):
         self.assertEqual(WatchlistItem.objects.count(), 0)
 
     def test_watchlist_add_rejects_get(self):
-        make_user()
+        make_user(is_staff=True)
         self.client.login(username="alice", password="pw-Test-12345")
         self.assertEqual(self.client.get(url("watchlist_add", self.product.pk)).status_code, 405)
 
 
 class ProductCrudTests(TestCase):
     def setUp(self):
-        self.user = make_user()
+        self.user = make_user(is_staff=True)
         self.client.login(username="alice", password="pw-Test-12345")
 
     def test_create_product_also_creates_the_first_price_record(self):
@@ -212,8 +212,8 @@ class ProductCrudTests(TestCase):
         self.assertEqual(product.brand, "Kingston")
         records = list(product.price_records.all())
         self.assertEqual(len(records), 1)
-        self.assertEqual((records[0].price, records[0].retailer), (D("159.99"), "Newegg"))
-        self.assertEqual((product.price, product.best_retailer), (D("159.99"), "Newegg"))
+        self.assertEqual((records[0].price, records[0].retailer), (D("159.99"), "Computia"))
+        self.assertEqual((product.price, product.best_retailer), (D("159.99"), "Computia"))
 
     def test_brand_spelling_reuses_the_existing_one(self):
         make_product(brand="Kingston", model="Other Line")
@@ -260,7 +260,7 @@ class ProductCrudTests(TestCase):
         product = product_with_history([(100, 5), (95, 1)])
         WatchlistItem.objects.create(user=self.user, product=product, target_price=D("80"))
         confirm = self.client.get(url("product_delete", product.pk))
-        self.assertContains(confirm, "2</strong> price record")
+        self.assertContains(confirm, "all 2 price records")
         self.assertTrue(Product.objects.filter(pk=product.pk).exists())  # GET alone deletes nothing
         response = self.client.post(url("product_delete", product.pk))
         self.assertRedirects(response, url("product_list"))
@@ -275,19 +275,19 @@ class ProductCrudTests(TestCase):
 
 class PriceRecordCrudTests(TestCase):
     def setUp(self):
-        make_user()
+        make_user(is_staff=True)
         self.client.login(username="alice", password="pw-Test-12345")
         self.product = product_with_history([(200, 10)])
 
     def post_price(self, **overrides):
-        data = {"retailer": "Micro Center", "price": "150.00", "recorded_at": "2026-11-19T10:00", "retailer_url": ""}
+        data = {"retailer": "Cazasouq", "price": "150.00", "recorded_at": "2026-11-19T10:00", "retailer_url": ""}
         data.update(overrides)
         return self.client.post(url("price_create", self.product.pk), data)
 
     def test_adding_a_lower_price_updates_the_product(self):
         self.post_price(recorded_at="2026-11-19T10:00")
         self.product.refresh_from_db()
-        self.assertEqual((self.product.price, self.product.best_retailer), (D("150.00"), "Micro Center"))
+        self.assertEqual((self.product.price, self.product.best_retailer), (D("150.00"), "Cazasouq"))
         self.assertEqual(self.product.price_records.count(), 2)
 
     def test_invalid_price_rejected(self):
@@ -368,8 +368,8 @@ class CompareTests(TestCase):
         self.assertContains(response, "best-tag")
 
     def test_remove_link_only_when_more_than_two(self):
-        self.assertNotContains(self.get(self.p[0], self.p[1]), "Remove from comparison")
-        self.assertContains(self.get(self.p[0], self.p[1], self.p[2]), "Remove from comparison")
+        self.assertNotContains(self.get(self.p[0], self.p[1]), "compare-remove")
+        self.assertContains(self.get(self.p[0], self.p[1], self.p[2]), "compare-remove")
 
 
 class DealsPageTests(TestCase):
@@ -483,7 +483,7 @@ class AccountTests(TestCase):
     def test_bad_login_shows_message(self):
         make_user("carol")
         response = self.client.post(reverse("login"), {"username": "carol", "password": "wrong"})
-        self.assertContains(response, "do not match")
+        self.assertContains(response, "incorrect")
 
     def test_login_redirects_back_to_next(self):
         make_user("carol")

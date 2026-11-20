@@ -44,10 +44,10 @@ banner("QUERY 1 - filter products by DDR generation, capacity and price range, c
 // This is the main product-list query (filters + "Price: low to high").
 const q1 = () => appDb.products.find({
   ddr_generation: "DDR5", capacity_gb: 32,
-  price: { $gte: NumberDecimal("150"), $lte: NumberDecimal("220") }
+  price: { $gte: NumberDecimal("55"), $lte: NumberDecimal("85") }
 }).sort({ price: 1 });
 
-print("Query: db.products.find({ ddr_generation: 'DDR5', capacity_gb: 32, price: { $gte: 150, $lte: 220 } }).sort({ price: 1 })");
+print("Query: db.products.find({ ddr_generation: 'DDR5', capacity_gb: 32, price: { $gte: 55, $lte: 85 } }).sort({ price: 1 })");
 const q1_idx   = q1().explain("executionStats");
 const q1_scan  = q1().hint({ $natural: 1 }).explain("executionStats");
 summarise("WITH the compound index prod_ddr_cap_price_idx", q1_idx);

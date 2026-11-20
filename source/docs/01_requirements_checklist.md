@@ -30,7 +30,7 @@ This file is updated at the final audit.
 | Two queries analysed with `explain("executionStats")` | Done - `03_explain.js`, output in `docs/explain_output/` |
 | Django auth, forms, admin, MVT | Done - tests |
 | Bootstrap responsive, professional UI | Done - desktop and mobile screenshots in `docs/screenshots/` |
-| Realistic sample data | Done - `seed_data` (49 products, 4,119 price records) |
+| Realistic sample data | Done - `seed_data` (49 products, 3,929 price records) |
 | No unnecessary dependencies | Done - 3 direct dependencies |
 
 ## C. Deliverables (PDF)

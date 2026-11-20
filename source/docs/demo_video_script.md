@@ -8,7 +8,7 @@ Record the screen with narration (OBS Studio, Windows Game Bar, QuickTime or sim
 | 0:20 | Home page | **Problem:** buyers cannot easily tell whether a RAM price is genuinely good. **Motivation:** price changes, many retailers, specifications matter. |
 | 1:00 | Slide or `docs/02_architecture_and_risks.md` | Stack: Python, Django 5.2, MongoDB 8, Bootstrap 5. Why the official django-mongodb-backend instead of Djongo. |
 | 1:40 | `mongosh`: `show collections`, one document from each of products, price_records, watchlist | **Database design:** three collections; price history **referenced** (grows without limit), specs embedded; Decimal128 for money; ISODate for time. |
-| 3:00 | `mongosh`: run `mongo_scripts/03_explain.js` summary or open saved output | Two queries with `explain("executionStats")`: Query 2 examines 12 documents with the index vs 4,119 without; no in-memory sort. Mention indexes (`getIndexes`). |
+| 3:00 | `mongosh`: run `mongo_scripts/03_explain.js` summary or open saved output | Two queries with `explain("executionStats")`: Query 2 examines 12 documents with the index vs 3,929 without; no in-memory sort. Mention indexes (`getIndexes`). |
 | 4:00 | Code: `settings.py` (DATABASES, MIGRATION_MODULES), `models.py` | **Connectivity:** `parse_uri`, ObjectId auto field, custom app configs, Mongo-specific migrations. MVT: model - view - template. |
 | 4:50 | Browser: product list | Search "corsair"; filter DDR5, 32 GB, price range; sort; show pagination. |
 | 5:40 | Compare | Tick three kits, Compare; point out best-value highlights. |

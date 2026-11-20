@@ -58,17 +58,17 @@ class ClassifyFormulaTests(TestCase):
 
 class DealQueryTests(TestCase):
     def test_deal_uses_the_best_retailers_own_history(self):
-        # Amazon: 100,100,100 then a drop to 80 (newest).  Newegg is steady at 120.
+        # Amazon: 100,100,100 then a drop to 80 (newest).  Computia is steady at 120.
         product = make_product()
         for age, price in ((40, "100"), (30, "100"), (20, "100"), (1, "80")):
             add_record(product, price, retailer="Amazon", days_ago=age)
         for age in (35, 25, 10, 1):
-            add_record(product, "120", retailer="Newegg", days_ago=age)
+            add_record(product, "120", retailer="Computia", days_ago=age)
         product.refresh_from_db()
         self.assertEqual((product.price, product.best_retailer), (D("80.00"), "Amazon"))
 
         info = get_deal_info(product)
-        # baseline = mean(100,100,100,80) = 95 -> NOT the 4 Newegg records
+        # baseline = mean(100,100,100,80) = 95 -> NOT the 4 Computia records
         self.assertEqual(info.baseline_price, D("95.00"))
         self.assertEqual(info.record_count, 4)
         self.assertEqual(info.discount_percent, D("15.7"))  # exact 15.789..., shown truncated

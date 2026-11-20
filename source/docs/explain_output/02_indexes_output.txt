@@ -1,4 +1,4 @@
-
+﻿
 === A. Indexes in the application database (created by `python manage.py migrate`) ===
 
 products  (49 documents)
@@ -6,7 +6,7 @@ products  (49 documents)
   product_variant_unique        {"brand":1,"model":1,"ddr_generation":1,"capacity_gb":1,"modules":1,"speed_mhz":1,"cas_latency":1}   UNIQUE
   prod_ddr_cap_price_idx        {"ddr_generation":1,"capacity_gb":1,"price":1}
 
-price_records  (4119 documents)
+price_records  (3929 documents)
   _id_                          {"_id":1}
   price_product_time_idx        {"product_id":1,"recorded_at":-1}
   price_time_idx                {"recorded_at":1}
