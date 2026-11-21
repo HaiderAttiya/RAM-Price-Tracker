@@ -1,17 +1,3 @@
-"""
-Server-side SVG price-history chart (no JavaScript charting library needed).
-
-Design follows the dataviz method:
-  * one line per retailer, 2 px, round joins; end-dot with a 2 px surface ring
-  * categorical colours are assigned per RETAILER in a fixed order (a retailer
-    keeps its colour whatever the filters), taken from the validated palette
-    (adjacent-pair CVD ΔE ≥ 8, normal-vision ΔE ≥ 15).  Three of the colours are
-    below 3:1 on white, so the chart ALWAYS ships with a legend, a hover
-    tooltip (static/js/price-chart.js) and a data table (the history table on
-    the product page) as the required "relief".
-  * hairline solid grid, recessive axes, text in ink colours (never series colour)
-"""
-
 import json
 from datetime import datetime
 from decimal import Decimal
@@ -23,7 +9,6 @@ from django.utils.safestring import mark_safe
 
 from .models import RETAILER_NAMES
 
-# Fixed order == fixed identity (see module docstring).
 RETAILER_COLORS = dict(zip(RETAILER_NAMES, ["#2a78d6", "#1baf7a", "#eda100", "#eb6834"]))
 
 WIDTH, HEIGHT = 760, 300
@@ -35,7 +20,6 @@ INK_MUTED = "#6f6e69"
 
 
 def _nice_ticks(low, high, target=5):
-    """Round-number tick values covering [low, high]."""
     if high <= low:
         high = low + 1
     raw = (high - low) / target
@@ -51,11 +35,7 @@ def _nice_ticks(low, high, target=5):
 
 
 def build_price_chart(records):
-    """
-    records: iterable of PriceRecord (any order).
-    Returns {"svg": SafeString, "data": dict for the hover script, "series": legend list}
-    or None when there is nothing to draw.
-    """
+   
     by_retailer = {}
     for record in records:
         by_retailer.setdefault(record.retailer, []).append((record.recorded_at, Decimal(record.price)))
@@ -92,7 +72,6 @@ def build_price_chart(records):
         f'xmlns="http://www.w3.org/2000/svg" class="price-chart-svg">'
     ]
 
-    # horizontal grid + y labels
     for tick in ticks:
         y = sy(tick)
         is_base = tick == ticks[0]
@@ -104,7 +83,6 @@ def build_price_chart(records):
             f'<text x="{x0 - 8}" y="{y + 4:.1f}" text-anchor="end" font-size="13" fill="{INK_MUTED}">{escape(label)}</text>'
         )
 
-    # x labels (5 evenly spaced dates)
     for i in range(5):
         ms = t_min + (t_max - t_min) * i / 4
         label = datetime.fromtimestamp(ms / 1000).astimezone().strftime("%d %b")
@@ -143,5 +121,4 @@ def build_price_chart(records):
 
 
 def chart_json(data):
-    """Used only by tests: stable JSON representation of the chart data."""
     return json.dumps(data, sort_keys=True)

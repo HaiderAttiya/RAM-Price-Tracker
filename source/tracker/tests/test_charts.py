@@ -23,11 +23,11 @@ class ChartTests(TestCase):
         add_record(product, "160.00", retailer="Advanti", days_ago=5)
         chart = build_price_chart(product.price_records.all())
         names = [s["name"] for s in chart["data"]["series"]]
-        self.assertEqual(names, ["Computia", "Advanti"])  # fixed retailer order, not data order
+        self.assertEqual(names, ["Computia", "Advanti"])  
         for series in chart["data"]["series"]:
             self.assertEqual(series["color"], RETAILER_COLORS[series["name"]])
         self.assertEqual(chart["svg"].count("<path"), 2)
-        self.assertEqual(chart["svg"].count("<circle"), 2)  # one end-dot per line
+        self.assertEqual(chart["svg"].count("<circle"), 2)  
 
     def test_chart_is_accessible_and_has_data_points_in_order(self):
         product = make_product()

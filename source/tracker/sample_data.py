@@ -1,12 +1,6 @@
 """
 Catalogue used by ``python manage.py seed_data``.
 
-Brands, product lines and specifications are modelled on real retail RAM kits.
-THE PRICES ARE SYNTHETIC (generated for the demo) and are NOT real retailer
-prices.
-
-Tuple layout:
-    (brand, model, ddr_generation, capacity_gb, modules, speed_mhz, cas_latency, voltage, typical_price)
 """
 
 CATALOGUE = [
@@ -78,8 +72,8 @@ PROMOTIONS = [
     ("ADATA", "XPG Spectrix D50 RGB", 32, 3200, 0.15),
 ]
 
-# Demo user's watchlist: (brand, model, capacity_gb, speed_mhz, target as a fraction of today's price).
-# A fraction >= 1 means "target already reached".
+
+
 WATCHLIST = [
     ("G.Skill", "Trident Z5 RGB", 32, 6000, 1.05),
     ("G.Skill", "Ripjaws V", 32, 3600, 1.05),

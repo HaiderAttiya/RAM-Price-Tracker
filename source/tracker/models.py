@@ -1,31 +1,4 @@
-"""
-Data model for the RAM Price Tracker.
 
-MongoDB collections (one Django model == one collection):
-
-    products       Product         RAM kits (the catalogue)
-    price_records  PriceRecord     price history; many records per product
-    watchlist      WatchlistItem   a user's saved product + target price
-
-Relationships (referencing, not embedding):
-
-    Product  1 --- *  PriceRecord    (price_records.product_id -> products._id)
-    Product  1 --- *  WatchlistItem  (watchlist.product_id     -> products._id)
-    User     1 --- *  WatchlistItem  (watchlist.user_id        -> auth_user._id)
-
-Price history is *referenced* rather than embedded in the product document
-because it grows without bound (a new record every time a retailer changes its
-price) and MongoDB documents are limited to 16 MB.  Referencing also lets us
-index and query the history independently of the product.
-
-Consistency rule
-----------------
-``Product.price`` is a denormalised copy of the product's *best current price*
-(the lowest of each retailer's most recent price).  It makes list pages,
-sorting and filtering cheap.  It is NEVER edited directly after creation: it is
-recomputed from ``price_records`` every time a record is saved or deleted (see
-``Product.refresh_price_from_history``), so the two can not drift apart.
-"""
 
 from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
@@ -37,9 +10,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-# ---------------------------------------------------------------------------
-# Choice lists
-# ---------------------------------------------------------------------------
+
 DDR_CHOICES = [("DDR3", "DDR3"), ("DDR4", "DDR4"), ("DDR5", "DDR5")]
 
 CAPACITY_CHOICES = [(gb, f"{gb} GB") for gb in (4, 8, 16, 24, 32, 48, 64, 96, 128)]
@@ -54,7 +25,7 @@ RETAILER_CHOICES = [
 ]
 RETAILER_NAMES = [value for value, _label in RETAILER_CHOICES]
 
-# Plausible (min, max) ranges per DDR generation, used for validation.
+
 SPEED_RANGE = {"DDR3": (800, 2400), "DDR4": (1600, 5600), "DDR5": (4000, 9600)}
 CAS_RANGE = {"DDR3": (5, 16), "DDR4": (10, 28), "DDR5": (20, 70)}
 VOLTAGE_RANGE = {
@@ -86,7 +57,7 @@ class Product(models.Model):
     cas_latency = models.PositiveSmallIntegerField("CAS latency (CL)", help_text="e.g. 30 for CL30.")
     voltage = models.DecimalField("voltage (V)", max_digits=3, decimal_places=2, help_text="e.g. 1.35")
 
-    # --- denormalised from price_records (see module docstring) -------------
+  
     price = models.DecimalField(
         "best current price",
         max_digits=8,
@@ -95,8 +66,7 @@ class Product(models.Model):
     )
     best_retailer = models.CharField("best price at", max_length=30, choices=RETAILER_CHOICES)
     price_updated_at = models.DateTimeField(null=True, blank=True, editable=False)
-    # -------------------------------------------------------------------------
-
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -104,8 +74,7 @@ class Product(models.Model):
         db_table = "products"
         ordering = ["brand", "model"]
         constraints = [
-            # The same kit can not be catalogued twice.  This also creates a
-            # unique index whose prefix (brand, model, ...) speeds up brand lookups.
+            
             models.UniqueConstraint(
                 fields=["brand", "model", "ddr_generation", "capacity_gb", "modules", "speed_mhz", "cas_latency"],
                 name="product_variant_unique",
@@ -116,8 +85,7 @@ class Product(models.Model):
             ),
         ]
         indexes = [
-            # Supports the main filter/sort query: DDR generation + capacity,
-            # then a price range / price ordering (equality, equality, range/sort).
+            
             models.Index(fields=["ddr_generation", "capacity_gb", "price"], name="prod_ddr_cap_price_idx"),
         ]
 
@@ -129,7 +97,7 @@ class Product(models.Model):
 
     # --- validation ------------------------------------------------------------
     def clean(self):
-        """Cross-field validation (ranges depend on the DDR generation)."""
+        
         super().clean()
         gen = self.ddr_generation
         if gen not in SPEED_RANGE:
@@ -152,7 +120,7 @@ class Product(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    # --- derived values (calculated, never stored) -----------------------------
+   
     @property
     def capacity_display(self):
         """'32 GB (2 x 16 GB)' or '16 GB' for a single stick."""
@@ -166,12 +134,7 @@ class Product(models.Model):
 
     @property
     def latency_ns(self):
-        """
-        True (first-word) latency in nanoseconds:  CL x 2000 / speed(MHz).
-
-        This is the standard way to compare kits with different speeds, e.g.
-        DDR5-6000 CL30 -> 10.00 ns, DDR4-3200 CL16 -> 10.00 ns.
-        """
+        
         if not self.speed_mhz:
             return None
         return (Decimal(self.cas_latency) * 2000 / Decimal(self.speed_mhz)).quantize(
@@ -186,7 +149,7 @@ class Product(models.Model):
 
     # --- price synchronisation -------------------------------------------------
     def latest_prices_by_retailer(self):
-        """Each retailer's most recent PriceRecord for this product, cheapest first."""
+        
         latest = []
         for retailer in RETAILER_NAMES:
             record = self.price_records.filter(retailer=retailer).order_by("-recorded_at").first()
@@ -196,14 +159,7 @@ class Product(models.Model):
         return latest
 
     def refresh_price_from_history(self):
-        """
-        Recompute ``price`` / ``best_retailer`` / ``price_updated_at`` from the
-        price_records collection.
-
-        Rule: take each retailer's MOST RECENT record, then keep the cheapest.
-        If the product has no records at all the stored values are left alone.
-        Returns True when the product document was changed.
-        """
+       
         latest = self.latest_prices_by_retailer()
         if not latest:
             return False
@@ -217,7 +173,7 @@ class Product(models.Model):
 
 
 class PriceRecord(models.Model):
-    """One observed price for a product at one retailer at one moment."""
+    
 
     # db_index=False: the compound index below already starts with "product".
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="price_records", db_index=False)
@@ -244,9 +200,7 @@ class PriceRecord(models.Model):
         if self.recorded_at and self.recorded_at > timezone.now() + timedelta(minutes=5):
             raise ValidationError({"recorded_at": "A price can not be recorded in the future."})
 
-    # Saving / deleting a record keeps Product.price in step with the history.
-    # (QuerySet.delete() bypasses these hooks - used only for cascades when the
-    # whole product is being deleted, where syncing would be pointless.)
+   
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.product.refresh_price_from_history()
@@ -259,7 +213,7 @@ class PriceRecord(models.Model):
 
 
 class WatchlistItem(models.Model):
-    """A product a user is tracking, with the price they would like to pay."""
+   
 
     # db_index=False: the unique (user, product) index below already starts with "user".
     user = models.ForeignKey(

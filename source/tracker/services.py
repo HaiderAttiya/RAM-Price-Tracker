@@ -1,27 +1,4 @@
-"""
-Business logic that is not tied to a single view.
 
-THE DEAL CALCULATION (used by the product pages, the Deals page and watchlist)
------------------------------------------------------------------------------
-For a product P whose best current price is C, offered by retailer R:
-
-    baseline  B = average price of all of R's price records for P that were
-                  recorded in the last DEAL_WINDOW_DAYS days   (default 90)
-    N           = how many such records there are
-    discount  D = (B - C) / B x 100    (compared exactly; shown truncated to 0.1 %)
-
-    P is a "deal"       when N >= DEAL_MIN_RECORDS (3)  and  D >= DEAL_THRESHOLD_PERCENT (10)
-    P is a "great deal" when N >= DEAL_MIN_RECORDS (3)  and  D >= 2 x the threshold (20)
-
-Why compare a retailer with *its own* history?  Comparing the cheapest retailer
-with the average of all retailers would always show a "discount" simply because
-we are picking the minimum of several prices.  Using the same retailer's own
-history means the discount is a genuine drop in that shop's price.
-
-WATCHLIST RULE:  an item's target is reached when  best current price <= target price.
-
-All thresholds live in settings.py so they can be tuned without touching code.
-"""
 
 from dataclasses import dataclass
 from datetime import timedelta
@@ -36,7 +13,7 @@ from .models import PriceRecord, Product
 LEVEL_GREAT = "great"
 LEVEL_DEAL = "deal"
 LEVEL_NONE = "none"
-LEVEL_UNKNOWN = "unknown"  # not enough history to judge
+LEVEL_UNKNOWN = "unknown"  
 
 
 @dataclass(frozen=True)
@@ -44,8 +21,8 @@ class DealInfo:
     current_price: Decimal
     baseline_price: Decimal | None  # B
     record_count: int  # N
-    window_low: Decimal | None  # cheapest record in the window (for display only)
-    discount_percent: Decimal | None  # D, may be negative (price is above baseline)
+    window_low: Decimal | None 
+    discount_percent: Decimal | None  
     level: str
 
     @property
@@ -58,20 +35,19 @@ def _money(value):
 
 
 def classify(current_price, baseline, record_count, window_low=None):
-    """Pure function implementing the formula above (easy to unit-test)."""
     if baseline is None or record_count < settings.DEAL_MIN_RECORDS or baseline <= 0:
         return DealInfo(current_price, None, record_count, window_low, None, LEVEL_UNKNOWN)
 
     exact = (baseline - current_price) / baseline * 100
     threshold = Decimal(settings.DEAL_THRESHOLD_PERCENT)
-    # The decision uses the EXACT discount, so 9.99% is not a deal.
+    
     if exact >= threshold * 2:
         level = LEVEL_GREAT
     elif exact >= threshold:
         level = LEVEL_DEAL
     else:
         level = LEVEL_NONE
-    # The figure shown to the user is truncated to 1 dp so it never overstates the discount.
+    
     shown = exact.quantize(Decimal("0.1"), rounding=ROUND_DOWN)
     return DealInfo(current_price, _money(baseline), record_count, window_low, shown, level)
 
@@ -81,10 +57,7 @@ def deal_window_start():
 
 
 def get_deal_infos(products):
-    """
-    Return {product.pk: DealInfo} for any iterable of products using ONE
-    grouped query against price_records (MongoDB $group on product + retailer).
-    """
+    
     products = list(products)
     if not products:
         return {}
@@ -110,7 +83,6 @@ def get_deal_info(product):
 
 
 def find_deals():
-    """All current deals, best discount first: [(product, DealInfo), ...]."""
     products = list(Product.objects.all())
     infos = get_deal_infos(products)
     deals = [(p, infos[p.pk]) for p in products if infos[p.pk].is_deal]
@@ -119,10 +91,7 @@ def find_deals():
 
 
 def best_value_flags(products):
-    """
-    For the comparison table: which product wins each row?
-    Returns {row_name: set_of_product_pks}.  Ties all win.
-    """
+   
 
     def winners(key, lowest=True):
         values = {p.pk: key(p) for p in products if key(p) is not None}

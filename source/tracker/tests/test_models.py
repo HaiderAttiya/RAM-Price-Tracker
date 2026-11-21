@@ -34,12 +34,11 @@ class ProductValidationTests(TestCase):
 
     def test_cas_latency_out_of_range_rejected(self):
         with self.assertRaises(ValidationError) as ctx:
-            self.full_clean(cas_latency=10)  # far too low for DDR5
+            self.full_clean(cas_latency=10)  
         self.assertIn("cas_latency", ctx.exception.message_dict)
 
     def test_capacity_must_divide_between_sticks(self):
-        # Every capacity offered in the form divides evenly, so exercise the
-        # safeguard directly with an uneven split (6 GB over 4 sticks).
+        
         product = Product(ddr_generation="DDR4", capacity_gb=6, modules=4, speed_mhz=3200, cas_latency=16, voltage=Decimal("1.35"))
         with self.assertRaises(ValidationError) as ctx:
             product.clean()
@@ -53,15 +52,14 @@ class ProductValidationTests(TestCase):
     def test_duplicate_variant_rejected_by_unique_constraint(self):
         make_product(brand="Kingston", model="Fury Beast")
         with self.assertRaises(ValidationError) as ctx:
-            self.full_clean(brand="Kingston", model="Fury Beast", cas_latency=30)  # same variant as make_product
+            self.full_clean(brand="Kingston", model="Fury Beast", cas_latency=30)  
         self.assertIn("already in the catalogue", str(ctx.exception))
 
 
 class ProductCalculationTests(TestCase):
     def test_true_latency_ns(self):
-        # DDR5-6000 CL30 -> 30 * 2000 / 6000 = 10.00 ns
+        
         self.assertEqual(make_product(speed_mhz=6000, cas_latency=30).latency_ns, Decimal("10.00"))
-        # DDR4-3200 CL16 -> 10.00 ns : the classic "same real latency" example
         self.assertEqual(make_product(ddr_generation="DDR4", speed_mhz=3200, cas_latency=16, voltage=Decimal("1.35")).latency_ns, Decimal("10.00"))
 
     def test_price_per_gb(self):
@@ -73,7 +71,6 @@ class ProductCalculationTests(TestCase):
 
 
 class PriceSynchronisationTests(TestCase):
-    """Product.price must always equal the cheapest of each retailer's NEWEST record."""
 
     def setUp(self):
         self.product = make_product(price=Decimal("999.00"))
@@ -95,15 +92,15 @@ class PriceSynchronisationTests(TestCase):
         self.assertEqual((p.price, p.best_retailer), (Decimal("185.00"), "Cazasouq"))
 
     def test_only_each_retailers_latest_record_counts(self):
-        add_record(self.product, "100.00", retailer="Amazon", days_ago=10)   # old low price
-        add_record(self.product, "190.00", retailer="Amazon", days_ago=1)    # newer, higher
+        add_record(self.product, "100.00", retailer="Amazon", days_ago=10)   
+        add_record(self.product, "190.00", retailer="Amazon", days_ago=1)   
         add_record(self.product, "195.00", retailer="Computia", days_ago=1)
         p = self.reload()
         self.assertEqual((p.price, p.best_retailer), (Decimal("190.00"), "Amazon"))
 
     def test_back_dated_record_does_not_change_current_price(self):
         add_record(self.product, "190.00", retailer="Amazon", days_ago=1)
-        add_record(self.product, "50.00", retailer="Amazon", days_ago=30)  # entered late, but old
+        add_record(self.product, "50.00", retailer="Amazon", days_ago=30) 
         self.assertEqual(self.reload().price, Decimal("190.00"))
 
     def test_deleting_the_newest_record_recalculates(self):
@@ -135,7 +132,7 @@ class CascadeTests(TestCase):
         WatchlistItem.objects.create(user=user, product=product, target_price=Decimal("120"))
         WatchlistItem.objects.create(user=user, product=other, target_price=Decimal("120"))
 
-        deleted_pk = product.pk  # Django clears .pk after delete()
+        deleted_pk = product.pk  
         product.delete()
 
         self.assertEqual(PriceRecord.objects.filter(product_id=deleted_pk).count(), 0)

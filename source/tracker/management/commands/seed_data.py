@@ -1,16 +1,3 @@
-"""
-python manage.py seed_data [--reset]
-
-Loads realistic (but SYNTHETIC) sample data:
-  * ~50 RAM kits across DDR3 / DDR4 / DDR5
-  * ~120 days of price history per kit, from 3-5 retailers each
-  * a few recent price drops so the "deal" logic has something to find
-  * two demo users and a small watchlist
-
-The generator is seeded, so the same command always produces the same
-catalogue and the same price *shape* (dates are relative to "now").
-"""
-
 import random
 from datetime import timedelta
 from decimal import Decimal, ROUND_HALF_UP
@@ -26,7 +13,6 @@ HISTORY_DAYS = 120
 
 
 def to_price(value):
-    """Round a sample price to three decimal places."""
     return Decimal(str(value)).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
 
 
@@ -66,7 +52,6 @@ class Command(BaseCommand):
             f"Demo logins:  admin / {options['admin_password']}  (superuser)   demo / {options['demo_password']}"
         )
 
-    # ------------------------------------------------------------------
     def create_products(self):
         objs = [
             Product(
@@ -84,7 +69,6 @@ class Command(BaseCommand):
         return [by_key[(b, m, c, s, cl, g)] for b, m, g, c, _mods, s, cl, _v, _p in CATALOGUE]
 
     def market_trend(self, rng):
-        """A daily price index over HISTORY_DAYS+1 days, normalised so today == 1.0."""
         drift = rng.uniform(-0.0008, 0.0012)
         level, series = 1.0, []
         for _ in range(HISTORY_DAYS + 1):
@@ -105,8 +89,7 @@ class Command(BaseCommand):
                 rng.randint(2, len(other_retailers))
             )
 
-            # Give each retailer a different price level for this RAM kit.
-            # This allows different retailers to have the lowest price.
+            
             retailer_prices = {
                 retailer: rng.uniform(0.94, 1.06)
                 for retailer in retailers
@@ -114,12 +97,10 @@ class Command(BaseCommand):
 
             promo_retailer = None
             if index in promo_by_index:
-                # Choose a random retailer to receive the promotion.
                 promo_retailer = rng.choice(retailers)
 
             for retailer in retailers:
                 offset = retailer_prices[retailer]
-                # Walk backwards from "a day or two ago" in 3-8 day steps.
                 age_days = rng.uniform(0.1, 2.0)
                 ages = []
                 while age_days < HISTORY_DAYS:
@@ -155,7 +136,6 @@ class Command(BaseCommand):
         return users
 
     def create_watchlist(self, user, products):
-        """A mix of reached and not-yet-reached targets for the demo user."""
         key_to_product = {(p.brand, p.model, p.capacity_gb, p.speed_mhz): p for p in products}
         count = 0
         for brand, model, capacity, speed, factor in WATCHLIST:

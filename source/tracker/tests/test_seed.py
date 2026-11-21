@@ -24,7 +24,7 @@ class SeedCommandTests(TestCase):
         self.assertGreater(PriceRecord.objects.count(), 3000)
         self.assertEqual(WatchlistItem.objects.count(), 5)
 
-        # CONSISTENCY: every product's stored price is the cheapest of its retailers' newest records.
+        
         for product in Product.objects.all():
             latest = product.latest_prices_by_retailer()
             self.assertTrue(latest, f"{product} has no price history")

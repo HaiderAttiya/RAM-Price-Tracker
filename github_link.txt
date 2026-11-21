@@ -1,5 +1,3 @@
 GitHub repository link:
 
 https://github.com/HaiderAttiya/RAM-Price-Tracker
-
-Check before submitting: the repository is public (or shared with the lecturer) and contains the source code, README and requirements.txt.

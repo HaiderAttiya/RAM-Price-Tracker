@@ -244,7 +244,7 @@ class ProductCrudTests(TestCase):
     def test_edit_updates_specs_but_never_the_price(self):
         product = product_with_history([(150, 3)], price=D("150"))
         data = {k: v for k, v in VALID_PRODUCT.items() if k not in ("price", "best_retailer")}
-        data.update(brand=product.brand, model="Renamed", price="1.00")  # a smuggled price must be ignored
+        data.update(brand=product.brand, model="Renamed", price="1.00")  
         response = self.client.post(url("product_update", product.pk), data)
         self.assertRedirects(response, product.get_absolute_url())
         product.refresh_from_db()
@@ -261,7 +261,7 @@ class ProductCrudTests(TestCase):
         WatchlistItem.objects.create(user=self.user, product=product, target_price=D("80"))
         confirm = self.client.get(url("product_delete", product.pk))
         self.assertContains(confirm, "all 2 price records")
-        self.assertTrue(Product.objects.filter(pk=product.pk).exists())  # GET alone deletes nothing
+        self.assertTrue(Product.objects.filter(pk=product.pk).exists())  
         response = self.client.post(url("product_delete", product.pk))
         self.assertRedirects(response, url("product_list"))
         self.assertEqual(Product.objects.count(), 0)
@@ -413,8 +413,8 @@ class WatchlistTests(TestCase):
 
     def test_watchlist_page_flags_reached_targets_first(self):
         other = product_with_history([(200, 5), (200, 3), (200, 2), (200, 0)])
-        WatchlistItem.objects.create(user=self.alice, product=other, target_price=D("150"))        # waiting
-        WatchlistItem.objects.create(user=self.alice, product=self.product, target_price=D("95"))  # reached (90 <= 95)
+        WatchlistItem.objects.create(user=self.alice, product=other, target_price=D("150"))        
+        WatchlistItem.objects.create(user=self.alice, product=self.product, target_price=D("95"))  
         response = self.client.get(url("watchlist"))
         rows = response.context["rows"]
         self.assertEqual([r["product"].pk for r in rows], [self.product.pk, other.pk])

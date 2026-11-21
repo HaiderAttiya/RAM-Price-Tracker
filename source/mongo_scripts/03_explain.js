@@ -1,17 +1,6 @@
-/*
- * 03_explain.js  -  query analysis with explain("executionStats")
- *
- * Run (needs the sample data: `python manage.py seed_data`):
- *   mongosh --quiet "mongodb://localhost:27017/ram_price_tracker" --file mongo_scripts/03_explain.js
- *
- * Two representative queries of the application are analysed.  For each one
- * the script prints a short summary AND the full explain() document, first
- * with the index the application uses, then forced to a collection scan with
- * hint({$natural: 1}) so the effect of the index can be compared.
- */
+
 const appDb = db.getSiblingDB("ram_price_tracker");
 
-// Collect the stage names of a plan, e.g. "LIMIT > FETCH > IXSCAN"
 function planChain(stage) {
   const names = [];
   while (stage) { names.push(stage.stage); stage = stage.inputStage || (stage.inputStages && stage.inputStages[0]); }

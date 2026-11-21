@@ -1,18 +1,3 @@
-/*
- * 01_crud_demo.js  -  MongoDB CRUD demonstration for the RAM Price Tracker
- *
- * Run:   mongosh --quiet "mongodb://localhost:27017" --file mongo_scripts/01_crud_demo.js
- *
- * The script works in its OWN database ("ram_crud_demo"), which it drops and
- * re-creates every time, so it is safe to run repeatedly and never touches the
- * data of the Django application ("ram_price_tracker").
- *
- * The documents use exactly the field names and BSON types that
- * django-mongodb-backend writes for the Django models:
- *     CharField -> String        PositiveIntegerField -> Int32
- *     DecimalField -> Decimal128 DateTimeField -> Date (UTC)
- *     ForeignKey  -> ObjectId stored in "<field>_id"   AutoField -> ObjectId "_id"
- */
 const demo = db.getSiblingDB("ram_crud_demo");
 demo.dropDatabase();
 
@@ -81,7 +66,6 @@ demo.price_records.insertMany([
 demo.watchlist.insertOne({ user_id: ObjectId(), product_id: productId, target_price: NumberDecimal("175.00"), created_at: new Date() });
 print("price_records: " + demo.price_records.countDocuments() + ", watchlist: " + demo.watchlist.countDocuments());
 
-// 1d. The schema validator rejects bad data (price is a string, DDR generation not allowed)
 try {
   demo.products.insertOne({ brand: "Bad", model: "Kit", ddr_generation: "DDR9", capacity_gb: NumberInt(8), speed_mhz: NumberInt(3200),
     cas_latency: NumberInt(16), voltage: NumberDecimal("1.35"), price: "cheap" });

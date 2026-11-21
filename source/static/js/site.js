@@ -1,12 +1,6 @@
-/*
-  Small progressive enhancements (the site works without them):
-  - enable the "Compare" button only when 2-4 products are ticked
-*/
 (function () {
   var form = document.getElementById("compare-form");
   if (!form) return;
-  // The button and counter live in the sticky bar OUTSIDE the <form>; they are
-  // linked to it with the HTML form="compare-form" attribute (nested forms are invalid HTML).
   var button = document.querySelector("[data-compare-button]");
   var counter = document.querySelector("[data-compare-count]");
   var min = 2;

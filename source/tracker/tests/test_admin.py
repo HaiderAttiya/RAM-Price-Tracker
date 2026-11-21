@@ -54,7 +54,6 @@ class AdminSiteTests(TestCase):
         self.assertEqual(product.price_records.count(), 1)
 
     def test_admin_bulk_delete_keeps_product_price_in_sync(self):
-        # Delete the newest record through the admin action; the price must fall back to the older record.
         newest = self.product.price_records.order_by("-recorded_at").first()
         self.client.post("/admin/tracker/pricerecord/", {"action": "delete_selected", "_selected_action": [str(newest.pk)], "post": "yes"})
         self.product.refresh_from_db()

@@ -2,7 +2,6 @@ from django.conf import settings
 
 
 def site_settings(request):
-    """Expose a few display settings to every template."""
     return {
         "CURRENCY_SYMBOL": settings.CURRENCY_SYMBOL,
         "DEAL_THRESHOLD_PERCENT": settings.DEAL_THRESHOLD_PERCENT,

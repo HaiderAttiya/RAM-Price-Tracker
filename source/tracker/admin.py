@@ -1,10 +1,4 @@
-"""
-Django admin configuration.
 
-Prices follow the same rule as the rest of the app: a product's price fields
-are read-only once it exists and change only through price records, which the
-PriceRecord model keeps in sync.
-"""
 
 from django.contrib import admin, messages
 
@@ -29,7 +23,7 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ("price_updated_at", "created_at", "updated_at")
 
     def get_readonly_fields(self, request, obj=None):
-        # On an existing product the denormalised price is derived data.
+        
         if obj is not None:
             return self.readonly_fields + ("price", "best_retailer")
         return self.readonly_fields
@@ -37,12 +31,12 @@ class ProductAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if not change:
-            # A new product starts with one price record (history == price).
+            
             PriceRecord.objects.create(product=obj, retailer=obj.best_retailer, price=obj.price)
 
     def save_formset(self, request, form, formset, change):
-        # Inline price records: save one at a time so each save/delete re-syncs the product price.
-        instances = formset.save(commit=False)  # also fills formset.deleted_objects
+        
+        instances = formset.save(commit=False)  
         for obj in formset.deleted_objects:
             obj.delete()
         for obj in instances:
@@ -58,8 +52,7 @@ class PriceRecordAdmin(admin.ModelAdmin):
     raw_id_fields = ("product",)
 
     def delete_queryset(self, request, queryset):
-        # QuerySet.delete() skips PriceRecord.delete(); delete one by one so the
-        # product price is recalculated after each removal.
+        
         for record in queryset:
             record.delete()
 

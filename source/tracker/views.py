@@ -1,11 +1,3 @@
-"""
-Views (the "V" in Django's MVT).
-
-Class-based generic views are used for plain CRUD; small function views are
-used where the logic is custom (comparison, watchlist add).  Anything that
-changes data requires a logged-in user; browsing, searching and comparing is
-open to everyone.
-"""
 
 import re
 from datetime import timedelta
@@ -44,7 +36,6 @@ CHART_RANGES = {"30": 30, "90": 90, "180": 180, "all": None}
 
 
 def spec_ranges():
-    """Accepted spec ranges per DDR generation, shown next to the product form."""
     return [
         {"generation": gen, "speed": SPEED_RANGE[gen], "cas": CAS_RANGE[gen], "voltage": VOLTAGE_RANGE[gen]}
         for gen in ("DDR3", "DDR4", "DDR5")
@@ -140,7 +131,7 @@ class ProductDetailView(DetailView):
         product = self.object
         request = self.request
 
-        # --- chart (range filter) ---
+        
         range_key = request.GET.get("range", "90")
         if range_key not in CHART_RANGES:
             range_key = "90"
@@ -174,7 +165,6 @@ class ProductDetailView(DetailView):
 # Products: create / edit / delete
 # ---------------------------------------------------------------------------
 class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Only administrators can access management pages."""
 
     def test_func(self):
         return self.request.user.is_staff
@@ -305,7 +295,7 @@ class PriceRecordDeleteView(AdminRequiredMixin, DeleteView):
 # Comparison
 # ---------------------------------------------------------------------------
 def compare(request):
-    """Side-by-side comparison of 2-4 products chosen with ?ids=<id>&ids=<id>..."""
+    
     ids = []
     for raw in request.GET.getlist("ids"):
         if OBJECT_ID_RE.match(raw) and raw not in ids:
@@ -319,7 +309,7 @@ def compare(request):
         ids = ids[:MAX_COMPARE]
 
     found = {str(p.pk): p for p in Product.objects.filter(pk__in=ids)}
-    products = [found[i] for i in ids if i in found]  # keep the order the user picked
+    products = [found[i] for i in ids if i in found]  
     if len(products) < 2:
         messages.error(request, "Some of the selected products no longer exist.")
         return redirect("tracker:product_list")
@@ -378,7 +368,6 @@ class WatchlistView(LoginRequiredMixin, TemplateView):
 @login_required
 @require_POST
 def watchlist_add(request, product_pk):
-    """Add a product to the watchlist, or change the target if it is already there."""
     product = get_object_or_404(Product, pk=product_pk)
     form = WatchlistForm(request.POST)
     if not form.is_valid():
@@ -397,7 +386,6 @@ def watchlist_add(request, product_pk):
 
 
 class OwnWatchlistItemMixin(LoginRequiredMixin):
-    """Users can only see and change their own watchlist entries (others give 404)."""
 
     model = WatchlistItem
 

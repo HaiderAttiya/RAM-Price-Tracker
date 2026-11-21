@@ -1,12 +1,3 @@
-/*
-  Hover/keyboard layer for the server-rendered price chart.
-
-  - a vertical hairline follows the pointer and snaps to the nearest recorded date
-  - ONE tooltip lists every retailer's price as of that date
-  - ArrowLeft / ArrowRight step through the dates when the chart has focus
-  - all text is inserted with textContent (never innerHTML)
-  The same numbers are always available in the history table below the chart.
-*/
 (function () {
   var dataEl = document.getElementById("price-chart-data");
   var svg = document.getElementById("price-chart-svg");

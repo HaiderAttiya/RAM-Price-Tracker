@@ -1,5 +1,3 @@
-"""Django forms (the validation layer between the browser and MongoDB)."""
-
 from decimal import Decimal
 
 from django import forms
@@ -21,7 +19,7 @@ DATETIME_LOCAL_FORMAT = "%Y-%m-%dT%H:%M"
 
 
 class BootstrapFormMixin:
-    """Give every widget the right Bootstrap 5 CSS class."""
+    
 
     def _style_widgets(self):
         for field in self.fields.values():
@@ -39,13 +37,7 @@ class BootstrapFormMixin:
         self._style_widgets()
 
     def full_clean(self):
-        """
-        Validate, then mark invalid fields so Bootstrap shows them in red.
-
-        This must happen here and NOT in __init__: touching self.errors in
-        __init__ would validate the form before subclasses finish setting up
-        (e.g. the database-driven brand choices of ProductFilterForm).
-        """
+       
         super().full_clean()
         for name in self._errors or {}:
             if name in self.fields:
@@ -54,11 +46,8 @@ class BootstrapFormMixin:
                     widget.attrs["class"] = f"{widget.attrs.get('class', '')} is-invalid".strip()
 
 
-# ---------------------------------------------------------------------------
-# Products
-# ---------------------------------------------------------------------------
+
 class ProductEditForm(BootstrapFormMixin, forms.ModelForm):
-    """Edit the specifications of a product (not its price - see ProductCreateForm)."""
 
     class Meta:
         model = Product
@@ -80,11 +69,7 @@ class ProductEditForm(BootstrapFormMixin, forms.ModelForm):
 
 
 class ProductCreateForm(ProductEditForm):
-    """
-    Create a product.  A product always starts with one price record, so the
-    form also asks for the first price and where it was seen.  After creation
-    prices are changed only by adding price records.
-    """
+  
 
     class Meta(ProductEditForm.Meta):
         fields = ProductEditForm.Meta.fields + ["price", "best_retailer"]
@@ -99,9 +84,7 @@ class ProductCreateForm(ProductEditForm):
         }
 
 
-# ---------------------------------------------------------------------------
-# Price records
-# ---------------------------------------------------------------------------
+
 class PriceRecordForm(BootstrapFormMixin, forms.ModelForm):
     recorded_at = forms.DateTimeField(
         label="Recorded at",
@@ -127,9 +110,7 @@ class PriceRecordForm(BootstrapFormMixin, forms.ModelForm):
             )
 
 
-# ---------------------------------------------------------------------------
-# Watchlist
-# ---------------------------------------------------------------------------
+
 class WatchlistForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = WatchlistItem
@@ -140,9 +121,7 @@ class WatchlistForm(BootstrapFormMixin, forms.ModelForm):
         }
 
 
-# ---------------------------------------------------------------------------
-# Search / filter (a plain Form: it is read from the query string, never saved)
-# ---------------------------------------------------------------------------
+
 SORT_CHOICES = [
     ("name", "Name (A–Z)"),
     ("price_asc", "Price: low to high"),
@@ -195,9 +174,7 @@ class ProductFilterForm(BootstrapFormMixin, forms.Form):
         return cleaned
 
 
-# ---------------------------------------------------------------------------
-# Accounts
-# ---------------------------------------------------------------------------
+
 class SignUpForm(BootstrapFormMixin, UserCreationForm):
     email = forms.EmailField(required=False, help_text="Optional.")
 

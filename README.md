@@ -1,6 +1,6 @@
 # RAM Price Tracker
 
-**IT7405 – Individual Project**
+**IT7405 - Project**
 
 RAM Price Tracker is a web application built with Django and MongoDB. It allows users to browse RAM products, compare prices from different retailers, view price history, identify deals, and manage a personal watchlist.
 
