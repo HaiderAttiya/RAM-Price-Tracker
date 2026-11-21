@@ -11,7 +11,7 @@ RAM Price Tracker is a web application built with Django and MongoDB. It allows 
 - Compare prices between retailers.
 - View price history and product specifications.
 - Identify deals based on previous recorded prices.
-- Add products and update their prices.
+- Add products and update their prices. (Admin Only)
 - Create a personal watchlist with target prices.
 - Manage application data through the Django admin panel.
 
@@ -128,7 +128,7 @@ python manage.py test tracker
 
 The application currently uses sample data. Product and retailer names are based on real brands and stores, but the sample prices are synthetic and are not live prices fetched from retailers.
 
-Prices can be added and updated through the application.
+Prices can be added and updated through the application by signing in as an Admin.
 
 ## Project Structure
 
