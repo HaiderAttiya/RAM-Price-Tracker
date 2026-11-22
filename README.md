@@ -2,62 +2,39 @@
 
 **IT7405 - Project**
 
-RAM Price Tracker is a web application built with Django and MongoDB. It allows users to browse RAM products, compare prices from different retailers, view price history, identify deals, and manage a personal watchlist.
+RAM Price Tracker is my IT7405 individual project: a Django app that stores its data in MongoDB rather than a relational database. You can search a catalogue of RAM kits, compare what retailers charge, see how a price has moved and keep a watchlist. Staff accounts manage the catalogue; everyone else can browse.
 
-## Features
+## What it does
 
-- Browse and search RAM products.
-- Filter products by brand, DDR generation, capacity, and price.
-- Compare prices between retailers.
-- View price history and product specifications.
-- Identify deals based on previous recorded prices.
-- Add products and update their prices. (Admin Only)
-- Create a personal watchlist with target prices.
-- Manage application data through the Django admin panel.
+- Search and filter by brand, DDR generation, capacity and price.
+- Compare what several retailers charge for the same kit.
+- Show a price history and flag a kit as a deal when it drops below its earlier low.
+- Let a signed-in user keep a watchlist with a target price for each kit.
+- Give staff the tools to add products and record new prices, through the site or the Django admin.
 
-## Technologies
+## Built with
 
-- Python 3.13
-- Django 5.2
-- MongoDB
-- Django MongoDB Backend
-- Bootstrap 5.3
-- HTML, CSS and JavaScript
+Python 3.13, Django 5.2 LTS, MongoDB (local Community Server or Atlas), django-mongodb-backend, and Bootstrap 5.3.9 with HTML, CSS and JavaScript.
 
-## Installation
+## Running it
 
-### Requirements
+You need Python 3.10 or newer (I used 3.13.2) and MongoDB 6.0 or newer (I used 9.0.2).
 
-- Python 3.10 or newer
-- MongoDB Community Server 6.0 or newer
-- Git (optional)
-
-### 1. Download the project
-
-Clone the repository:
+### 1. Get the code
 
 ```bash
 git clone https://github.com/HaiderAttiya/RAM-Price-Tracker.git
-```
-
-Open the project folder, then enter the source directory:
-
-```bash
 cd RAM-Price-Tracker/source
 ```
 
 ### 2. Create a virtual environment
 
-**Windows (PowerShell):**
-
-```powershell
+```bash
+# Windows PowerShell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
 
-**macOS / Linux:**
-
-```bash
+# macOS / Linux
 python3 -m venv .venv
 source .venv/bin/activate
 ```
@@ -68,20 +45,13 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-### 4. Configure MongoDB
+### 4. Start MongoDB
 
-Make sure MongoDB is running locally on port `27017`.
+Run MongoDB locally on the default port, 27017. The app uses a database called `ram_price_tracker` and creates it on the first migration. If yours runs somewhere else, set `MONGODB_URI` in your environment; `.env.example` lists the settings I used.
 
-The default database configuration is:
+### 5. Set up and run
 
-- Connection: `mongodb://localhost:27017`
-- Database: `ram_price_tracker`
-
-If you use MongoDB Atlas or a different connection, configure the `MONGODB_URI` environment variable. The available settings are listed in `.env.example`.
-
-### 5. Prepare and run the application
-
-Run the following commands from the `source` directory:
+From the `source` folder:
 
 ```bash
 python manage.py migrate
@@ -89,28 +59,22 @@ python manage.py seed_data
 python manage.py runserver
 ```
 
-Open the application at:
+The site is then at http://127.0.0.1:8000/
 
-http://127.0.0.1:8000/
+## Demo accounts
 
-## Demo Accounts
-
-The sample data includes two accounts:
+`seed_data` creates two accounts so you can try both roles straight away:
 
 | Account | Username | Password |
 |---|---|---|
 | Administrator | `admin` | `AdminPass123!` |
-| Demo user | `demo` | `DemoPass123!` |
+| Standard user | `demo` | `DemoPass123!` |
 
-These accounts are intended for local demonstration only. Change the passwords before using the application in any public or production environment.
+These are for local use only, so change them before putting the app anywhere public. The sign-up page also works, and accounts made that way are standard users.
 
-Users can also register through the sign-up page.
+## Database scripts and tests
 
-## MongoDB Scripts and Tests
-
-The project includes MongoDB scripts demonstrating database operations, indexes, and query performance.
-
-Run these commands from the `source` directory:
+The `mongo_scripts` folder holds the database work described in the report: the CRUD examples, the index creation and the two explain plans. Run them from `source` with mongosh:
 
 ```bash
 mongosh "mongodb://localhost:27017" --file mongo_scripts/01_crud_demo.js
@@ -118,35 +82,30 @@ mongosh "mongodb://localhost:27017" --file mongo_scripts/02_indexes.js
 mongosh "mongodb://localhost:27017/ram_price_tracker" --file mongo_scripts/03_explain.js
 ```
 
-To run the automated tests:
+The Django tests are run with:
 
 ```bash
 python manage.py test tracker
 ```
 
-## Price Data
+## About the price data
 
-The application currently uses sample data. Product and retailer names are based on real brands and stores, but the sample prices are synthetic and are not live prices fetched from retailers.
+Every price in the app is made up. The brands and retailers are real so the catalogue looks familiar, but nothing is scraped or fetched live. Prices only change when a staff account adds them, so sign in as the admin when you want to test the history and deals pages.
 
-Prices can be added and updated through the application by signing in as an Admin.
-
-## Project Structure
+## Folder layout
 
 ```text
 RAM-Price-Tracker/
-│
 ├── source/
-│   ├── ram_tracker/       # Django project settings and URLs
-│   ├── tracker/           # Application models, views and logic
+│   ├── ram_tracker/       # settings and URLs
+│   ├── tracker/           # models, views and logic
 │   ├── templates/         # HTML templates
 │   ├── static/            # CSS, JavaScript and assets
-│   ├── mongo_scripts/     # MongoDB scripts
-│   ├── mongo_migrations/  # Database migrations
-│   ├── docs/              # Project documentation
+│   ├── mongo_scripts/     # CRUD, index and explain scripts
+│   ├── mongo_migrations/  # migrations
 │   ├── manage.py
 │   └── requirements.txt
-│
 ├── IT7405_Project_Report.docx
+├── README.docx
 └── README.md
 ```
-

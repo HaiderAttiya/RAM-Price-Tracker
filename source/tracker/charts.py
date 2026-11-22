@@ -48,7 +48,7 @@ def build_price_chart(records):
     all_points = [pt for pts in by_retailer.values() for pt in pts]
     t_min = min(t for t, _ in all_points).timestamp() * 1000
     t_max = max(t for t, _ in all_points).timestamp() * 1000
-    if t_max - t_min < 86_400_000:  # a single day (or single record): pad so the line has width
+    if t_max - t_min < 86_400_000:  
         t_min, t_max = t_min - 43_200_000, t_max + 43_200_000
     p_min = float(min(p for _, p in all_points))
     p_max = float(max(p for _, p in all_points))
