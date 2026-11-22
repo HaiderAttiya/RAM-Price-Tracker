@@ -1,8 +1,7 @@
 # RAM Price Tracker
 
-**IT7405 - Project**
 
-RAM Price Tracker is my IT7405 individual project: a Django app that stores its data in MongoDB rather than a relational database. You can search a catalogue of RAM kits, compare what retailers charge, see how a price has moved and keep a watchlist. Staff accounts manage the catalogue; everyone else can browse.
+RAM Price Tracker is my individual project: a Django app that stores its data in MongoDB rather than a relational database. You can search a catalogue of RAM kits, compare what retailers charge, see how a price has moved and keep a watchlist. Staff accounts manage the catalogue; everyone else can browse.
 
 ## What it does
 
@@ -18,7 +17,7 @@ Python 3.13, Django 5.2 LTS, MongoDB (local Community Server or Atlas), django-m
 
 ## Running it
 
-You need Python 3.10 or newer (I used 3.13.2) and MongoDB 6.0 or newer (I used 9.0.2).
+You need Python 3.10 or newer and MongoDB 6.0 or newer .
 
 ### 1. Get the code
 
